@@ -19,7 +19,7 @@ $config['base_url']	= WEB_ROOT;
 define('BASE_URL',dirname(dirname(dirname(__FILE__))));
 define('CGMINER_ROOT','/home/pi/cgminer/');
 define('CGMINER_PATH','/home/pi/cgminer/cgminer');
-define('UPGRADE_PATH','https://github.com/rockminerinc/RockWeb/blob/master/');
+define('UPGRADE_PATH','http://rockminer.com/upload/');
 define('CGMINER_PATH311','/home/pi/cgminer-3.1.1/cgminer');
 define( 'SUDO_COMMAND' , 'sudo ' );
 define( 'CGMINER_CONFIG_ROOT' , '/home/pi/cgminer.conf' );

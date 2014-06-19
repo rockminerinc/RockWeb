@@ -38,8 +38,10 @@ class Home extends CI_Controller {
 
 	public function index()
 	{
+		$this->data['debug']  = $this->input->get('debug');
 		$this->data['sumary'] = request('summary');
 		$this->data['pools'] = request('pools');
+		$this->data['devss'] = request('devs');
 		$this->data['title']= 'summary';
 		$this->load->view('common/header', $this->data);	
 		$this->load->view('common/left');	
@@ -69,9 +71,6 @@ class Home extends CI_Controller {
 	{
 		//$this->data['r'] = request('devs');
 		$this->data['title']= 'Upgrade';
-
-
-
 			$this->form_validation->set_rules('version', 'version', 'trim|xss_clean');
 			$this->form_validation->set_rules('latest_version', 'latest_version', 'trim|xss_clean');
 			$this->form_validation->set_rules('step', 'step', 'trim|xss_clean');
@@ -193,7 +192,7 @@ class Home extends CI_Controller {
 			$content['kernel-path']='/usr/local/bin';
 			$content['api-allow']='W:0/0';
 			$content['icarus-options']='115200:1:1';
-			$content['api-description']='cgminer 4.3.0';
+			$content['api-description']='cgminer 4.3.3';
 			$content['hotplug']='5';
 
 			$data = json_encode($content);
@@ -425,14 +424,17 @@ iface eth0 inet static\n";
 			{
 				fwrite($file_pointer,$data);
 				fclose($file_pointer);
-				showmsg('Settings updated OK! Must reboot to apply the new settings.','?c=home&m=reboot');
+				exec('sudo service cgminer stop');
+				sleep(3);
+				exec('sudo service cgminer start');
+				showmsg('Settings updated OK! ','?c=home&m=index');
 			}
  
 
 		}
 		else
 		{
-			$filename = "/home/pi/cgminer.conf";
+			$filename = "/etc/cgminer.conf";
 		    $handle = fopen($filename, "r");
 
 		    $contents = fread($handle, filesize ($filename));
@@ -443,8 +445,7 @@ iface eth0 inet static\n";
 			$pools_data=$data_arr->pools;
 			$this->data['data_pool1'] = $pools_data[0];
 			$this->data['data_pool2'] = $pools_data[1];
-			$this->data['freq'] = $data_arr2['anu-freq'];
-
+ 
 			$this->load->view('common/header', $this->data);	
 			$this->load->view('common/left');	
 			$this->load->view('setpools');	
@@ -708,24 +709,24 @@ iface eth0 inet static\n";
 
 	public function SaveHashrate()
 	{
-			if(!file_exists("/var/www/data/hashrate.txt"))
+			if(!file_exists("/usr/share/nginx/www/data/hashrate.txt"))
 			{
-				$file_pointer = fopen('/var/www/data/hashrate.txt','a');
+				$file_pointer = fopen('/usr/share/nginx/www/data/hashrate.txt','a');
 				$head = "date,5m,15m,av\n";
 				fwrite($file_pointer,$head);
 				fclose($file_pointer);
 			}
 			else
 			{
-				$file_pointer = fopen('/var/www/data/hashrate.txt','a');
+				$file_pointer = fopen('/usr/share/nginx/www/data/hashrate.txt','a');
 				if($file_pointer === false)
 				{
-					exec('sudo chmod 777 /var/www/data/hashrate.txt');
+					exec('sudo chmod 777 /usr/share/nginx/www/data/hashrate.txt');
 					//showmsg('/var/www/data/hashrate.txt open error');
 				}
-				else
-				{
-					$file_pointer = fopen('/var/www/data/hashrate.txt','a');
+				//else
+				//{
+					$file_pointer = fopen('/usr/share/nginx/www/data/hashrate.txt','a');
 					$sumary = request('summary');
 						
 
@@ -740,7 +741,7 @@ iface eth0 inet static\n";
 						 fwrite($file_pointer,$data);
 						 fclose($file_pointer);
 						 echo '200';
-				}
+				//}
 
 			}
 
