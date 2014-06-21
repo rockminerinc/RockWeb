@@ -12,7 +12,7 @@ class Home extends CI_Controller {
 		$this->load->helper('cgminerapi');
 		$this->load->helper('functions');
   		$this->load->library('form_validation');
-
+  		$this->init();
  		//$command = SUDO_COMMAND.'date -R';
 		//exec( $command , $output );
 
@@ -34,7 +34,37 @@ class Home extends CI_Controller {
 	}
 
 
- 
+ 	private function init()
+ 	{
+			if(!file_exists("/usr/share/nginx/www/data/hashrate.txt"))
+			{
+				exec('sudo touch /usr/share/nginx/www/data/hashrate.txt');
+				exec('sudo chmod 777 /usr/share/nginx/www/data/hashrate.txt');
+				$file_pointer = fopen('/usr/share/nginx/www/data/hashrate.txt','a');
+				$head = "date,5m,15m,av\n";
+				fwrite($file_pointer,$head);
+				fclose($file_pointer);
+			}
+
+			if(!file_exists("/usr/share/nginx/www/data/data/setting.inc.php"))
+			{
+				exec('sudo touch /usr/share/nginx/www/data/setting.inc.php');
+				exec('sudo chmod 777 /usr/share/nginx/www/data/setting.inc.php');
+				$file_pointer = fopen('/usr/share/nginx/www/data/setting.inc.php','w');
+				$content = '<?php 
+    $dev_name="box001";
+    $dev_id="";
+    $lang="english";
+    $timezone="UTC+8";
+    $monitor_url="http://192.168.1.130/rockmonitor/index.php/home/getdata";
+?>';
+
+				fwrite($file_pointer,$content);
+				fclose($file_pointer);
+			}
+
+
+ 	}
 
 	public function index()
 	{
@@ -65,7 +95,6 @@ class Home extends CI_Controller {
 		
 		$this->load->view('common/footer');	
 	}
-
 
 	public function upgrade()
 	{
@@ -157,15 +186,100 @@ class Home extends CI_Controller {
 	}
 
 
+	public function setting()
+	{
+		//echo 'dd';
+		//$var = updateconfig("./data/setting.inc.php", "kkk",'111');//
+		//var_dump($var);
+		$this->data['title']= 'setting';
+		$this->form_validation->set_rules('dev_name', 'dev_name', 'trim|xss_clean');
+		$this->form_validation->set_rules('dev_id', 'dev_id', 'trim|xss_clean');
+		$this->form_validation->set_rules('lang', 'lang', 'trim|xss_clean');
+		$this->form_validation->set_rules('timezone', 'timezone', 'trim|xss_clean');
+		$this->form_validation->set_rules('monitor_url', 'monitor_url', 'trim|xss_clean');
+
+		if($this->form_validation->run())
+		{
+			$device['dev_name'] = $this->input->post('dev_name', TRUE);
+			$device['dev_id'] =$this->input->post('dev_id', TRUE);
+			$device['lang'] =$this->input->post('lang', TRUE);
+			$device['timezone'] =$this->input->post('timezone', TRUE);
+			$device['monitor_url'] =$this->input->post('monitor_url', TRUE);
+			updateconfig("./data/setting.inc.php", "dev_name",$device['dev_name']);//
+			updateconfig("./data/setting.inc.php", "dev_id",$device['dev_id']);//
+			updateconfig("./data/setting.inc.php", "lang",$device['lang']);//
+			updateconfig("./data/setting.inc.php", "timezone",$device['timezone']);//
+			updateconfig("./data/setting.inc.php", "monitor_url",$device['monitor_url']);//
+			showmsg('Settings updated OK!');
+
+		}
+		else
+		{
+			$this->data['dev_name'] = getconfig("./data/setting.inc.php", "dev_name", $type="string");
+			$this->data['dev_id'] = getconfig("./data/setting.inc.php", "dev_id", $type="string");
+			$this->data['lang'] = getconfig("./data/setting.inc.php", "lang", $type="string");
+			$this->data['timezone'] = getconfig("./data/setting.inc.php", "timezone", $type="string");
+			$this->data['monitor_url'] = getconfig("./data/setting.inc.php", "monitor_url", $type="string");
+
+			$this->load->view('common/header', $this->data);	
+			$this->load->view('common/left');	
+			$this->load->view('setting');	
+			
+			$this->load->view('common/footer');	
+
+		}
 
 
 
+	}
+
+
+	public function post_to_monitor()
+	{
+
+
+		$data['ip']			= 	getip();
+		//echo $data['ip']	;
+		$data['dev_name']	= getconfig("./data/setting.inc.php", "dev_name", $type="string");
+		//echo $data['dev_name'];
+		$data['dev_num']	= 	dev_num();
+		 
+		$hashrate_data = file_get_contents('/usr/share/nginx/www/data/realtime_hashrate.txt');
+		//echo $hashrate_data;
+		$data_array=explode(",",$hashrate_data);
+		//var_dump($data_array);
+		//$realtime_data = $sumary['SUMMARY']['MHS 5s'].','.$Time_5m.','.$Time_15m.','.$avg.','.$now;
+		$sumary = request('summary');
+		$data['asc_mhs_5s']  	= 	$sumary['SUMMARY']['MHS 5s'];//$data_array[0];
+		$data['asc_mhs_5m']  	= 	$sumary['SUMMARY']['MHS 5m'];//$data_array[1];
+		$data['asc_mhs_15m']  	= 	$sumary['SUMMARY']['MHS 15m'];//$data_array[2];
+		$data['asc_mhs_av']  	= 	$sumary['SUMMARY']['MHS av'];
+		$data['asc_last_share_time']  	= 	$sumary['SUMMARY']['Last getwork'];
+ 
+		$data['event_time']  	=time();
+ 
+		$server = getconfig("./data/setting.inc.php", "monitor_url", $type="string");
+		if(!empty($data['ip']))
+		$url=$server."\?ip\=".$data['ip'].'\&\&dev_name\='.$data['dev_name'].'\&\&dev_num\='.$data['dev_num'].'\&\&asc_mhs_av\='.$data['asc_mhs_av'].'\&\&asc_mhs_5m\='.$data['asc_mhs_5m'].'\&\&asc_mhs_5s\='.$data['asc_mhs_5s'].'\&\&asc_mhs_15m\='.$data['asc_mhs_15m'].'\&\&asc_last_share_time\='.$data['asc_last_share_time'].'\&\&event_time\='.$data['event_time'];
+
+
+		exec("sudo /usr/bin/lynx -source ".$url." > /dev/null &");
+		//echo '200';
+
+		
+
+	}
 
 	public function pools()
 	{
 
 		$this->data['title']= 'pools';
-		$this->form_validation->set_rules('setpools', 'setpools', 'trim|xss_clean');	
+		$this->form_validation->set_rules('pool_url1', 'pool_url1', 'trim|xss_clean');
+		$this->form_validation->set_rules('pool_worker1', 'pool_worker1', 'trim|xss_clean');
+		$this->form_validation->set_rules('pool_passwd1', 'pool_passwd1', 'trim|xss_clean');
+		$this->form_validation->set_rules('pool_url2', 'pool_url2', 'trim|xss_clean');
+		$this->form_validation->set_rules('pool_worker2', 'pool_worker2', 'trim|xss_clean');
+
 		if($this->form_validation->run())
 		{
 
@@ -252,7 +366,10 @@ class Home extends CI_Controller {
 	{
 		$this->data['title']= 'setip';
 
-		$this->form_validation->set_rules('setip', 'setip', 'trim|required|xss_clean');	
+		$this->form_validation->set_rules('JMIP', 'JMIP', 'trim|required|xss_clean');	
+		$this->form_validation->set_rules('JMSK', 'JMSK', 'trim|required|xss_clean');	
+		$this->form_validation->set_rules('JGTW', 'JGTW', 'trim|required|xss_clean');	
+
 
 		if($this->form_validation->run())
 		{
@@ -331,7 +448,8 @@ iface eth0 inet static\n";
 	public function setdns()
 	{
 		$this->data['title']= 'setdns';
-		$this->form_validation->set_rules('setdns', 'setdns', 'trim|xss_clean');	
+		$this->form_validation->set_rules('PDNS', 'PDNS', 'trim|xss_clean');	
+		$this->form_validation->set_rules('SDNS', 'SDNS', 'trim|xss_clean');	
 		if($this->form_validation->run())
 		{
 			//showmsg('1');
@@ -414,11 +532,11 @@ iface eth0 inet static\n";
 			//echo   
 			$data = json_encode($content);
 			$data=str_replace("\\/", "/",  $data);
-			$file_pointer = fopen('/home/pi/cgminer.conf','w');
+			$file_pointer = fopen('/etc/cgminer.conf','w');
 			if($file_pointer === false)
 			{
-				showmsg('/home/pi/cgminer.conf open error');
-				exec('sudo chmod 777 /home/pi/cgminer.conf');
+				showmsg('/etc/cgminer.conf open error');
+				exec('sudo chmod 777 /etc/cgminer.conf');
 			}
 			else
 			{
@@ -467,7 +585,7 @@ iface eth0 inet static\n";
 			$timezone_url = '/usr/share/zoneinfo/Etc/'.$timezone;
 			//cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 			exec('sudo cp '.$timezone_url.' /etc/localtime');
-			exec('sudo rm -rf /var/www/data/hashrate.txt');
+			exec('sudo  echo /dev/null > /usr/share/nginx/www/data/hashrate.txt');
 			showmsg('Timezone set OK!');
 		}
 		else
@@ -492,9 +610,6 @@ iface eth0 inet static\n";
 		$this->load->view('check');	
 		$this->load->view('common/footer');	
 	}
-
-
-
 
 	public function reboot()
 	{
@@ -626,20 +741,13 @@ iface eth0 inet static\n";
 		$command = SUDO_COMMAND.'date -R';
 		exec( $command , $output );
 
-		// get current time
-		//$cur = time();
-		//$aryReturn['TIME'] = $cur;
 
 		// check
 		if ( !empty( $output ) && count( $output ) > 0 ) 
 		{
-			// match timezone
-			//preg_match( '/\+0800/' , $output[0] , $match_zone );
 
-			//if ( !empty( $match_zone[0] ) ) 
-			//{
 				$aryReturn['ZONE'] = $output[0];
-			//}
+
 		}
 
 		echo json_encode( $aryReturn );
@@ -705,12 +813,12 @@ iface eth0 inet static\n";
 		exit;
 	}
 
-
-
 	public function SaveHashrate()
 	{
 			if(!file_exists("/usr/share/nginx/www/data/hashrate.txt"))
 			{
+				exec('touch /usr/share/nginx/www/data/hashrate.txt');
+				exec('sudo chmod 777 /usr/share/nginx/www/data/hashrate.txt');
 				$file_pointer = fopen('/usr/share/nginx/www/data/hashrate.txt','a');
 				$head = "date,5m,15m,av\n";
 				fwrite($file_pointer,$head);
@@ -722,17 +830,16 @@ iface eth0 inet static\n";
 				if($file_pointer === false)
 				{
 					exec('sudo chmod 777 /usr/share/nginx/www/data/hashrate.txt');
-					//showmsg('/var/www/data/hashrate.txt open error');
+
 				}
-				//else
-				//{
+
 					$file_pointer = fopen('/usr/share/nginx/www/data/hashrate.txt','a');
+					//$file_pointer2 = fopen('/usr/share/nginx/www/data/realtime_hashrate.txt','w');
+
 					$sumary = request('summary');
-						
 
 						 $date=date('Y-m-d H:i:s',time());
-						 echo $date;
-						 //$date=date('Y-m-d H:i:s');
+		 
 						 $avg = $sumary['SUMMARY']['MHS av'];
 						 $Time_5m = $sumary['SUMMARY']['MHS 5m'];
 						 $Time_15m = $sumary['SUMMARY']['MHS 15m'];
@@ -740,13 +847,9 @@ iface eth0 inet static\n";
 						 $data=$date.','.$Time_5m.','.$Time_15m.','.$avg."\n";
 						 fwrite($file_pointer,$data);
 						 fclose($file_pointer);
-						 echo '200';
-				//}
+
 
 			}
-
- 
-			//}
 
 	}
 

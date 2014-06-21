@@ -113,7 +113,7 @@ function showmsg($msg, $url_forward=WEB_ROOT, $second=5)
 
 	}
 
-	function geturl($url){ 
+	function geturl($url){
 
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $url);
@@ -127,6 +127,99 @@ function showmsg($msg, $url_forward=WEB_ROOT, $second=5)
 	curl_close($ch); 
 	return $result;
 	}
+
+function getip()
+{
+		@exec("ifconfig -a", $return_array);
+
+		$temp_array = array();
+		foreach ( $return_array as $value )
+		{
+			if ( preg_match_all( "/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/i", $value, $temp_array ) )
+			{
+				$tmpIp = $temp_array[0];
+				if ( is_array( $tmpIp ) ) $tmpIp = array_shift( $tmpIp );
+				$ip_addr = $tmpIp;
+				break;
+			}
+		}
+
+		unset($temp_array);
+		return $ip_addr;
+
+}
+
+//配置文件数据值获取。
+//默认没有第三个参数时，按照字符串读取提取''中或""中的内容
+//如果有第三个参数时为int时按照数字int处理。
+function getconfig($file, $ini, $type="string")
+{
+	if ($type=="int")
+	{
+		$str = file_get_contents($file);
+		$config = preg_match("/" . $ini . "=(.*);/", $str, $res);
+		Return $res[1];
+	}
+	else
+	{
+		$str = file_get_contents($file);
+		$config = preg_match("/" . $ini . "=\"(.*)\";/", $str, $res);
+		if($res[1]==null)
+		{	
+			$config = preg_match("/" . $ini . "='(.*)';/", $str, $res);
+		}
+		Return $res[1];
+	}
+} 
+
+//配置文件数据项更新
+//默认没有第四个参数时，按照字符串读取提取''中或""中的内容
+//如果有第四个参数时为int时按照数字int处理。
+function updateconfig($file, $ini, $value,$type="string")
+{
+	$str = file_get_contents($file);
+	$str2="";
+	if($type=="int") 
+	{	
+		$str2 = preg_replace("/" . $ini . "=(.*);/", $ini . "=" . $value . ";", $str);
+	}
+	else 
+	{
+		$str2 = preg_replace("/" . $ini . "=(.*);/", $ini . "=\"" . $value . "\";", $str);
+	}
 	
- 
+	file_put_contents($file, $str2);
+} 
+
+
+function dev_num()
+{
+		// lsusb command
+		$command = 'sudo lsusb';
+		@exec( $command , $output );
+
+		$dev_num=0;
+
+		// check result
+		if ( !empty( $output ) && count( $output ) > 0 )
+		{
+			// run command success
+			//$aryReturn['COMMAND'] = 1;
+			// find mill
+			foreach ( $output as $usb )
+			{
+				//Bus 001 Device 004: ID 10c4:ea60 Cygnal Integrated Products, Inc. CP210x UART Bridge / myAVR mySmartUSB light
+
+
+				preg_match( '/.*Bus\s(\d+)\sDevice\s(\d+).*Cygnal\sIntegrated\sProducts.*CP210x\sUART\sBridge.*/' , $usb , $match_usb );
+				if ( !empty( $match_usb[1] ) && !empty( $match_usb[2] ) )
+				{
+					$dev_num ++;
+				}
+			}
+		}
+		return $dev_num;
+
+	}
+
 ?>

@@ -12,12 +12,12 @@
 	</tr>
 		<tr>
 
-		<td>File</td><td>
+		<td>Downloaded Version</td><td>
 		<?php 
 			if ($step==1||$step==0) {
 				echo "NULL";
 			}
-			elseif($step==2) echo "rockweb_".$latest_version; 
+			elseif($step==2) echo $download_version; 
 			 
 			?></td>
 	</tr>

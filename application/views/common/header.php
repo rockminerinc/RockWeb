@@ -14,7 +14,7 @@ if($this->router->fetch_method()=='index')
 }
 ?>
 
-<title>ROCKMINER CGMINER WebUI</title>
+<title>RockWeb</title>
 <link href="static/css/bootstrap.min.css" rel="stylesheet" media="screen">
 <link href="static/css/layout.css" rel="stylesheet" type="text/css" />
 </head>
