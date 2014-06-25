@@ -43,15 +43,13 @@ class Monitor extends CI_Controller
 	    $result = curl_exec($ch);
 	    curl_close($ch);
 
-	    print_r($result);
-
 	    return $result;
 	}
 
 	public function send_status()
 	{
 		$data['head'] = $this->pack_head();
-		$data['data']['status'] = $this->pack_head();
+		$data['data']['status'] = $this->pack_status();
 		$this->post('http://miner.btckan.com/miner/miner_status', $data);
 	}
 
