@@ -26,8 +26,8 @@ class Monitor extends CI_Controller
 
 	private function pack_status()
 	{
-		$status['summary'] = request('summary');
-		$status['pools'] = request('pools');
+		$status['summary'] = request_raw('summary');
+		$status['pools'] = request_raw('pools');
 
 		return $status;
 	}
@@ -51,6 +51,12 @@ class Monitor extends CI_Controller
 		$data['head'] = $this->pack_head();
 		$data['data']['status'] = $this->pack_status();
 		$this->post('http://miner.btckan.com/miner/miner_status', $data);
+	}
+
+	public function test()
+	{
+		print_r(request_raw('summary'));
+		print_r(request('summary'));
 	}
 
 }

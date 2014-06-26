@@ -45,24 +45,32 @@ function readsockline($socket)
  }
  return $line;
 }
+
+#得到原始数据
+function request_raw($cmd)
+{
+    $socket = getsock('127.0.0.1', 4028);
+    if($socket != null)
+    {
+    	socket_write($socket, $cmd, strlen($cmd));
+		$line = readsockline($socket);
+		socket_close($socket);
+		return $line;
+    }
+
+    return '';
+}
+
 #
 function request($cmd)
 {
- $socket = getsock('127.0.0.1', 4028);
- if ($socket != null)
- {
-	socket_write($socket, $cmd, strlen($cmd));
-	$line = readsockline($socket);
-	socket_close($socket);
+	$line = request_raw($cmd);
 
 	if (strlen($line) == 0)
 	{
 		echo "WARN: '$cmd' returned nothing\n";
 		return $line;
 	}
-
-	//print "$cmd returned '$line'\n";
-	//print $line;
 	
 	if (substr($line,0,1) == '{')
 		return json_decode($line, true);
@@ -108,9 +116,6 @@ function request($cmd)
 	}
 
 	return $data;
- }
-
- return null;
 }
  
  
