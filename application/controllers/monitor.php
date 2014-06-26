@@ -34,14 +34,17 @@ class Monitor extends CI_Controller
 
 	private function post($url, $data)
 	{
+		$post_data = json_encode($data);
 		$ch = curl_init();
 	    curl_setopt($ch, CURLOPT_URL, $url);
 	    curl_setopt($ch, CURLOPT_HEADER, 0);
 	    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 	    curl_setopt($ch, CURLOPT_POST, 1);
-	    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+	    curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
 	    $result = curl_exec($ch);
 	    curl_close($ch);
+
+	    echo $post_data;
 
 	    return $result;
 	}
@@ -50,7 +53,9 @@ class Monitor extends CI_Controller
 	{
 		$data['head'] = $this->pack_head();
 		$data['data']['status'] = $this->pack_status();
-		$this->post('http://miner.btckan.com/miner/miner_status', $data);
+		$result = $this->post('http://miner.btckan.com/miner/miner_status', $data);
+
+		echo $result;
 	}
 
 	public function test()
