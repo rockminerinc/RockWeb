@@ -80,7 +80,7 @@ class Home extends CI_Controller {
 		$this->load->view('common/footer');	
 	}
 
-	public function upgrade()
+	public function upgrade2()
 	{
 		//$this->data['r'] = request('devs');
 		$this->data['title']= 'Upgrade';
@@ -789,6 +789,37 @@ iface eth0 inet static\n";
 		$this->load->view('common/header', $this->data);	
 		$this->load->view('common/left');	
 		$this->load->view('reboot');	
+		$this->load->view('common/footer');			
+
+		}
+
+		
+		
+	}
+
+	public function upgrade()
+	{
+
+		$this->form_validation->set_rules('upgrade', 'upgrade', 'trim|required|xss_clean');	
+
+		if($this->form_validation->run())
+		{
+
+ 
+			$command = 'sudo /root/upgrade.sh &';
+
+			exec( $command , $output ,$result);
+ 			
+			showmsg('Wait for upgrading...',WEB_ROOT,'45');	
+
+
+		}
+		else
+		{
+		$this->data['title']= 'Upgrade';
+		$this->load->view('common/header', $this->data);	
+		$this->load->view('common/left');	
+		$this->load->view('upgrade');	
 		$this->load->view('common/footer');			
 
 		}
