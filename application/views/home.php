@@ -40,7 +40,7 @@
 </script>
  <?php endif;?>
  
- <table class="table table-striped" style="width:750px">
+ <table class="table table-striped" style="width:90%">
 <tr style="font-weight:bold;">
  
 	<td>GHS av</td><td>GHS 5s</td><td>GHS 15m</td><td>Accepted</td><td>Rejected</td><td>Rej%</td>
@@ -67,7 +67,8 @@
  				<?php
 					
  				if($key=='Elapsed'||$key=='Last getwork'||$key=='Device Rejected%'||$key=='Difficulty Stale'||$key=='Difficulty Rejected'||$key=='Difficulty Accepted'||$key=='Local Work'||$key=='MHS 1m'||$key=='MHS 5m'||$key=='Getworks'||$key=='Hardware Errors'||$key=='Discarded'||$key=='Found Blocks'||$key=='Utility'||$key=='Stale'||$key=='Get Failures'||$key=='Remote Failures'||$key=='Network Blocks'||$key=='Total MH'||$key=='Work Utility'||$key=='Stratum URL'||$key=='Has GBT'||$key=='Pool Stale%'||$key=='Best Share'||$key=='Device Hardware%')
- 					continue;				 
+ 					continue;
+
 					
  					if($key=='When')
  					{
@@ -123,9 +124,9 @@
 
 
 
-<table class="table table-striped" style="width:750px">
+<table class="table table-striped" style="width:90%">
 <tr style="font-weight:bold;">
-	<td>POOL</td><td>URL</td><td>Status</td><td>Priority</td><td>Last Share Time</td> 
+	<td>POOL</td><td>URL</td><td>Status</td><td>Priority</td><td>Worker</td><td>Last Share Time</td> 
 </tr>
  
 <?php foreach ($pools as $key=>$devs): ?>
@@ -153,7 +154,7 @@ if($key=='STATUS')continue;
 				
 				<?php
  
-					if($key!='POOL' && $key!='URL' && $key!='Status' && $key!='Priority' && $key!='Last Share Time'  )
+					if($key!='POOL' && $key!='URL' && $key!='Status'&& $key!='User' && $key!='Priority' && $key!='Last Share Time'  )
 						continue;
 
 					
@@ -161,8 +162,17 @@ if($key=='STATUS')continue;
 					if($key=='Last Share Time')
 					{
 						//$key="Time";
-						$str = date('Y/m/d H:i:s',$str);
+						$period =time()-$str;
+						
+						$str = time_tran($str);	
+						//$str = date('Y/m/d H:i:s',$str);
+						if($period>300)
+							$str='<font color=gray><i>'.$str.'</i></font>';
+						else
+							$str='<font color=blue>'.$str.'</font>';
+
 					}
+ 
 										
 					if($key=='MHS av'||$key=='MHS 5s'||$key=='MHS 1m'||$key=='MHS 5m'||$key=='MHS 15m')
 					{
@@ -186,26 +196,44 @@ if($key=='STATUS')continue;
 
 
 
-<table class="table table-striped" style="width:750px">
+<table class="table table-striped" style="width:90%">
 
 
        <tr style="font-weight:bold;">
-       	<td width=50px>ID</td><td>Enabled</td><td>Temperature</td><td>GHS av</td><td>GHS 5s</td><td>GHS 15m</td><td>Device Rejected%</td>
+       	<td width=50px>ID</td><td>Temperature</td><td>GHS av</td><td>GHS 5s</td><td>GHS 15m</td>
        </tr>
 
-<?php foreach ($devss as $key=>$devs): ?>
+<?php 
+$dev_num=1;
+foreach ($devss as $key=>$devs): ?>
 
 <?php
-if($key=='STATUS')continue;
+if($key=='STATUS')
+	continue;
+ 
 ?>
 
        <tr >
 
             <?php foreach ($devs as $key=>$str): ?>
-				<?php
 
-					if($key!="ID"&&$key!="Enabled"&&$key!="Temperature"&&$key!="User"&&$key!="MHS av"&&$key!="MHS 5s"&&$key!="MHS 15m"&&$key!="Device Rejected%") 
+            <?php
+ 
+            	if($devs['Enabled']=='N')
+            		break;
+            ?>
+
+				<?php
+ 
+					 if($key=='ID')
+					 {
+					 	echo '<td>'.$dev_num.'</td> ';
+					 		$dev_num++;
+					 }
+					  
+					if($key!="Temperature"&&$key!="User"&&$key!="MHS av"&&$key!="MHS 5s"&&$key!="MHS 15m") 
 						continue;
+ 
 
  					if($key=='Device Hardware%'||$key=='Pool Rejected%')
  					{

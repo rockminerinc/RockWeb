@@ -128,6 +128,21 @@ function showmsg($msg, $url_forward=WEB_ROOT, $second=5)
 	return $result;
 	}
 
+function curl_access($url)
+{
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, $url);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt($ch, CURLOPT_HEADER, 0);
+	$output = curl_exec($ch);
+	if ($output === FALSE) {
+	    return "cURL Error: " . curl_error($ch);
+	}
+	curl_close($ch);
+	return $output;
+}
+
+
 function getip()
 {
 		@exec("ifconfig -a", $return_array);
@@ -177,6 +192,7 @@ function getconfig($file, $ini, $type="string")
 //如果有第四个参数时为int时按照数字int处理。
 function updateconfig($file, $ini, $value,$type="string")
 {
+
 	$str = file_get_contents($file);
 	$str2="";
 	if($type=="int") 
@@ -222,4 +238,23 @@ function dev_num()
 
 	}
 
+ 
+
+function time_tran($time){
+    $t=time()-$time;
+    $f=array(
+        '31536000'=>' Year',
+        '2592000'=>' month',
+        '604800'=>' week',
+        '86400'=>' day',
+        '3600'=>' hour',
+        '60'=>' minutes',
+        '1'=>' seconds'
+    );
+    foreach ($f as $k=>$v)    {
+        if (0 !=$c=floor($t/(int)$k)) {
+            return $c.$v.' ago ';
+        }
+    }
+}
 ?>

@@ -46,23 +46,6 @@ class Home extends CI_Controller {
 				fclose($file_pointer);
 			}
 
-			if(!file_exists("/usr/share/nginx/www/data/data/setting.inc.php"))
-			{
-				exec('sudo touch /usr/share/nginx/www/data/setting.inc.php');
-				exec('sudo chmod 777 /usr/share/nginx/www/data/setting.inc.php');
-				$file_pointer = fopen('/usr/share/nginx/www/data/setting.inc.php','w');
-				$content = '<?php 
-    $dev_name="box001";
-    $dev_id="";
-    $lang="english";
-    $timezone="UTC+8";
-    $monitor_url="http://192.168.1.130/rockmonitor/index.php/home/getdata";
-?>';
-
-				fwrite($file_pointer,$content);
-				fclose($file_pointer);
-			}
-
 
  	}
 
@@ -88,7 +71,8 @@ class Home extends CI_Controller {
 	public function devs()
 	{
 		$this->data['r'] = request('devs');
-		$this->data['title']= 'devs';
+
+ 		$this->data['title']= 'devs';
 		$this->load->view('common/header', $this->data);	
 		$this->load->view('common/left');	
 		$this->load->view('devs');	
@@ -115,13 +99,15 @@ class Home extends CI_Controller {
 			if($step=='1')
 			{
 				#download file
+				@exec("sudo rm -rf /home/pi/temp/*");
 				if(!is_dir("/home/pi/temp/"))
 				{
-					exec("mkdir /home/pi/temp/");
-					exec("sudo chmod 777  /home/pi/temp/");
+					@exec("mkdir /home/pi/temp/");
+					@exec("sudo chmod 777  /home/pi/temp/");
 					 
 				}
-				$command='wget '.UPGRADE_PATH.'rockweb_'.$latest_version.'.zip -O /home/pi/temp/rockweb_'.$latest_version.'.zip';
+
+				$command='wget '.UPGRADE_PATH.'rockweb_'.$latest_version.'.zip -O /home/pi/temp/rockweb_'.$latest_version.'.zip &';
 
 				exec( $command , $output ,$result);
 
@@ -132,11 +118,11 @@ class Home extends CI_Controller {
 			elseif ($step=='2') {
 				# upgrade...
 
-				$command 	= "sudo unzip -o /home/pi/temp/rockweb_".$latest_version.".zip -d /usr/share/nginx/www/";
+				$command 	= "sudo unzip -o /home/pi/temp/rockweb_".$latest_version.".zip -d /usr/share/nginx/www/ &";
 
 				exec( $command , $output ,$result);
-				
-				showmsg('Upgrading...Please Wait...20 seconds!',WEB_ROOT,'20');	
+				var_dump($output);
+				//showmsg('Upgrading...Please Wait...20 seconds!',WEB_ROOT,'20');	
 				 
 			}
 
@@ -150,6 +136,7 @@ class Home extends CI_Controller {
 			$version_url	=	"https://raw.githubusercontent.com/rockminerinc/RockWeb/master/rockweb.ver";
 			$this->data['latest_version'] 		=	file_get_contents($version_url);
 			$this->data['current_version'] 		=	CURRENT_VERSION;
+			//$this->data['Downloaded Version'] 		=	basename("/home/pi/temp/rockweb_".$this->data['latest_version'].".zip");
 			//echo $version ;
 			if(CURRENT_VERSION<$this->data['latest_version'])
 				$this->data['need_upgrade']=1;
@@ -185,30 +172,100 @@ class Home extends CI_Controller {
 
 	}
 
-
 	public function setting()
+	{
+			if(!file_exists("/usr/share/nginx/www/data/setting.txt"))
+			{
+				exec('touch /usr/share/nginx/www/data/setting.txt');
+				exec('sudo chmod 777 /usr/share/nginx/www/data/setting.txt');
+ 
+			}
+			else
+			{
+			
+					//$file_pointer2 = fopen('/usr/share/nginx/www/data/realtime_hashrate.txt','w');
+
+				$this->data['title']= 'setting';
+				$this->form_validation->set_rules('dev_name', 'dev_name', 'trim|xss_clean');
+		 
+				$this->form_validation->set_rules('monitor_url', 'monitor_url', 'trim|xss_clean');
+
+				if($this->form_validation->run())
+				{
+					$file_pointer = fopen('/usr/share/nginx/www/data/setting.txt','w');
+					if($file_pointer === false)
+					{
+						exec('sudo chmod 777 /usr/share/nginx/www/data/setting.txt');
+						$file_pointer = fopen('/usr/share/nginx/www/data/setting.txt','w');
+
+					}
+
+
+					$device['dev_name'] = $this->input->post('dev_name', TRUE);
+					$device['monitor_url'] =$this->input->post('monitor_url', TRUE);
+
+					$data=json_encode($device);
+					fwrite($file_pointer,$data);
+					fclose($file_pointer);
+					showmsg('Settings updated OK!');
+
+				}
+				else
+				{
+					$filename = "/usr/share/nginx/www/data/setting.txt";
+					  $ctx = stream_context_create(array( 
+					        'http' => array( 
+					            'timeout' => 1    //设置超时
+					            ) 
+					        ) 
+					    ); 
+
+					$contents= file_get_contents($filename, 0, $ctx); 
+
+					//$contents = fread($file_pointer, filesize ($filename));
+					var_dump($contents);
+					$this->data =	json_decode($contents);
+					//$this->data['dev_name'] = getconfig("./data/setting.inc.php", "dev_name", $type="string");
+					//$this->data['dev_id'] = getconfig("./data/setting.inc.php", "dev_id", $type="string");
+					//$this->data['lang'] = getconfig("./data/setting.inc.php", "lang", $type="string");
+					//$this->data['timezone'] = getconfig("./data/setting.inc.php", "timezone", $type="string");
+					//$this->data['monitor_url'] = getconfig("./data/setting.inc.php", "monitor_url", $type="string");
+
+					$this->load->view('common/header', $this->data);	
+					$this->load->view('common/left');	
+					$this->load->view('setting');	
+					
+					$this->load->view('common/footer');	
+
+				}
+
+			}
+	}
+
+
+	public function setting2()
 	{
 		//echo 'dd';
 		//$var = updateconfig("./data/setting.inc.php", "kkk",'111');//
 		//var_dump($var);
+		@exec('sudo chmod 777 /usr/share/nginx/www/data/setting.inc.php');
+
 		$this->data['title']= 'setting';
 		$this->form_validation->set_rules('dev_name', 'dev_name', 'trim|xss_clean');
-		$this->form_validation->set_rules('dev_id', 'dev_id', 'trim|xss_clean');
-		$this->form_validation->set_rules('lang', 'lang', 'trim|xss_clean');
-		$this->form_validation->set_rules('timezone', 'timezone', 'trim|xss_clean');
+ 
 		$this->form_validation->set_rules('monitor_url', 'monitor_url', 'trim|xss_clean');
 
 		if($this->form_validation->run())
 		{
 			$device['dev_name'] = $this->input->post('dev_name', TRUE);
-			$device['dev_id'] =$this->input->post('dev_id', TRUE);
-			$device['lang'] =$this->input->post('lang', TRUE);
-			$device['timezone'] =$this->input->post('timezone', TRUE);
+			//$device['dev_id'] =$this->input->post('dev_id', TRUE);
+			//$device['lang'] =$this->input->post('lang', TRUE);
+			//$device['timezone'] =$this->input->post('timezone', TRUE);
 			$device['monitor_url'] =$this->input->post('monitor_url', TRUE);
 			updateconfig("./data/setting.inc.php", "dev_name",$device['dev_name']);//
-			updateconfig("./data/setting.inc.php", "dev_id",$device['dev_id']);//
-			updateconfig("./data/setting.inc.php", "lang",$device['lang']);//
-			updateconfig("./data/setting.inc.php", "timezone",$device['timezone']);//
+			//updateconfig("./data/setting.inc.php", "dev_id",$device['dev_id']);//
+			//updateconfig("./data/setting.inc.php", "lang",$device['lang']);//
+			//updateconfig("./data/setting.inc.php", "timezone",$device['timezone']);//
 			updateconfig("./data/setting.inc.php", "monitor_url",$device['monitor_url']);//
 			showmsg('Settings updated OK!');
 
@@ -216,9 +273,9 @@ class Home extends CI_Controller {
 		else
 		{
 			$this->data['dev_name'] = getconfig("./data/setting.inc.php", "dev_name", $type="string");
-			$this->data['dev_id'] = getconfig("./data/setting.inc.php", "dev_id", $type="string");
-			$this->data['lang'] = getconfig("./data/setting.inc.php", "lang", $type="string");
-			$this->data['timezone'] = getconfig("./data/setting.inc.php", "timezone", $type="string");
+			//$this->data['dev_id'] = getconfig("./data/setting.inc.php", "dev_id", $type="string");
+			//$this->data['lang'] = getconfig("./data/setting.inc.php", "lang", $type="string");
+			//$this->data['timezone'] = getconfig("./data/setting.inc.php", "timezone", $type="string");
 			$this->data['monitor_url'] = getconfig("./data/setting.inc.php", "monitor_url", $type="string");
 
 			$this->load->view('common/header', $this->data);	
@@ -237,18 +294,33 @@ class Home extends CI_Controller {
 	public function post_to_monitor()
 	{
 
+ 
 
 		$data['ip']			= 	getip();
-		//echo $data['ip']	;
-		$data['dev_name']	= getconfig("./data/setting.inc.php", "dev_name", $type="string");
-		//echo $data['dev_name'];
+		$data['ipint']			= 	ip2long($data['ip']);
+ 
+		$filename = "/usr/share/nginx/www/data/setting.txt";
+		$ctx = stream_context_create(array( 
+					        'http' => array( 
+					            'timeout' => 1    //设置超时
+					            ) 
+					        ) 
+			); 
+		$file_data = file_get_contents($filename, 0, $ctx);
+		
+		$contents=json_decode($file_data) ;
+ 		$server =$contents->monitor_url;
+
+ 		if(empty($server))
+ 		{
+ 			echo 'server is blank';
+ 			exit;
+ 		}
+
+		$data['dev_name']	= $contents->dev_name;
+
+ 
 		$data['dev_num']	= 	dev_num();
-		 
-		$hashrate_data = file_get_contents('/usr/share/nginx/www/data/realtime_hashrate.txt');
-		//echo $hashrate_data;
-		$data_array=explode(",",$hashrate_data);
-		//var_dump($data_array);
-		//$realtime_data = $sumary['SUMMARY']['MHS 5s'].','.$Time_5m.','.$Time_15m.','.$avg.','.$now;
 		$sumary = request('summary');
 		$data['asc_mhs_5s']  	= 	$sumary['SUMMARY']['MHS 5s'];//$data_array[0];
 		$data['asc_mhs_5m']  	= 	$sumary['SUMMARY']['MHS 5m'];//$data_array[1];
@@ -258,13 +330,52 @@ class Home extends CI_Controller {
  
 		$data['event_time']  	=time();
  
-		$server = getconfig("./data/setting.inc.php", "monitor_url", $type="string");
-		if(!empty($data['ip']))
-		$url=$server."\?ip\=".$data['ip'].'\&\&dev_name\='.$data['dev_name'].'\&\&dev_num\='.$data['dev_num'].'\&\&asc_mhs_av\='.$data['asc_mhs_av'].'\&\&asc_mhs_5m\='.$data['asc_mhs_5m'].'\&\&asc_mhs_5s\='.$data['asc_mhs_5s'].'\&\&asc_mhs_15m\='.$data['asc_mhs_15m'].'\&\&asc_last_share_time\='.$data['asc_last_share_time'].'\&\&event_time\='.$data['event_time'];
+
+		$miner_data['ip'] = $data['ip'];
+		$miner_data['ipint'] =$data['ipint'];
+		$miner_data['dev_name'] =$data['dev_name'];
+		$miner_data['dev_num'] =$data['dev_num'];
+		$miner_data['asc_mhs_5s'] =$data['asc_mhs_5s'];
+		$miner_data['asc_mhs_5m'] =$data['asc_mhs_5m'];
+		$miner_data['asc_mhs_15m'] =$data['asc_mhs_15m'];
+		$miner_data['asc_mhs_av'] =$data['asc_mhs_av'];
+		$miner_data['asc_last_share_time'] =$data['asc_last_share_time'];
+		$miner_data['event_time'] =$data['event_time'];
 
 
-		exec("sudo /usr/bin/lynx -source ".$url." > /dev/null &");
-		//echo '200';
+		$devices = request('devs');
+
+		foreach ($devices as $key => $dev) {
+			if($key=="STATUS")
+				continue;
+			foreach ($dev as $key2 => $value) {
+				if($key2=="Temperature")
+					$temp_arry[]=$value;
+			}
+			
+			# code...
+		}
+
+		$max_key = array_search(max($temp_arry),$temp_arry); 
+
+		$miner_data['temperature'] = floor($temp_arry[$max_key]);//max Temperature
+
+ 		$miner_json = json_encode($miner_data);
+
+ 		
+		$url=$server."index.php?c=home&m=getdata&data=".$miner_json;
+ 
+		$ctx = stream_context_create(array( 
+					        'http' => array( 
+					            'timeout' => 5    //time out
+					            ) 
+					        ) 
+			); 
+		$re=file_get_contents($url, 0, $ctx);//($url);
+
+ 
+		echo $re;
+ 
 
 		
 
@@ -575,17 +686,42 @@ iface eth0 inet static\n";
 
  	public function setTimezone()
  	{
-		$this->data['title']= 'setpools';
+		$this->data['title']= 'setTimezone';
+
+        if(!file_exists("/usr/share/nginx/www/data/timezone.txt"))
+        {
+                exec('touch /usr/share/nginx/www/data/timezone.txt');
+                exec('sudo chmod 777 /usr/share/nginx/www/data/timezone.txt');
+ 
+        }
+
+
+
+
 		$this->form_validation->set_rules('timezone', 'timezone', 'trim|xss_clean');	
 		if($this->form_validation->run())
 		{
 			exec('sudo rdate -s '.TIME_SERVER);//同步时钟
 
+            $file_pointer = fopen('/usr/share/nginx/www/data/timezone.txt','w');
+            if($file_pointer === false)
+            {
+                exec('sudo chmod 777 /usr/share/nginx/www/data/timezone.txt');
+                $file_pointer = fopen('/usr/share/nginx/www/data/timezone.txt','w');
+
+            }
+
 			$timezone = $this->input->post('timezone', TRUE);
 			$timezone_url = '/usr/share/zoneinfo/Etc/'.$timezone;
+            //$data=json_encode($device);
+            fwrite($file_pointer,$timezone);
+            fclose($file_pointer);
+
+
 			//cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 			exec('sudo cp '.$timezone_url.' /etc/localtime');
-			exec('sudo  echo /dev/null > /usr/share/nginx/www/data/hashrate.txt');
+			exec('sudo rm -rf /usr/share/nginx/www/data/hashrate.txt');
+			//exec('sudo  echo /dev/null > /usr/share/nginx/www/data/hashrate.txt');
 			showmsg('Timezone set OK!');
 		}
 		else
@@ -620,7 +756,19 @@ iface eth0 inet static\n";
 		{
 
 			//$exec('sudo reboot');
-			
+			$filename = "/usr/share/nginx/www/data/timezone.txt";
+			 $ctx = stream_context_create(array( 
+					        'http' => array( 
+					            'timeout' => 1    //设置超时
+					            ) 
+					        ) 
+					    ); 
+
+			$timezone= file_get_contents($filename, 0, $ctx); 
+			$timezone_url = '/usr/share/zoneinfo/Etc/'.$timezone;
+			//cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+			exec('sudo cp '.$timezone_url.' /etc/localtime');
+
 			
 			$command = 'sudo reboot 2>&1';
 
