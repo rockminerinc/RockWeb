@@ -322,13 +322,14 @@ class Home extends CI_Controller {
  
 		$data['dev_num']	= 	dev_num();
 		$sumary = request('summary');
+		$data['asc_elapsed']  		= 	$sumary['SUMMARY']['Elapsed'];//$data_array[0];
 		$data['asc_mhs_5s']  	= 	$sumary['SUMMARY']['MHS 5s'];//$data_array[0];
 		$data['asc_mhs_5m']  	= 	$sumary['SUMMARY']['MHS 5m'];//$data_array[1];
 		$data['asc_mhs_15m']  	= 	$sumary['SUMMARY']['MHS 15m'];//$data_array[2];
 		$data['asc_mhs_av']  	= 	$sumary['SUMMARY']['MHS av'];
 		$data['asc_last_share_time']  	= 	$sumary['SUMMARY']['Last getwork'];
  
-		$data['event_time']  	=time();
+		$data['event_time']  	=	time();
  
 
 		$miner_data['ip'] = $data['ip'];
@@ -341,6 +342,7 @@ class Home extends CI_Controller {
 		$miner_data['asc_mhs_av'] =$data['asc_mhs_av'];
 		$miner_data['asc_last_share_time'] =$data['asc_last_share_time'];
 		$miner_data['event_time'] =$data['event_time'];
+		$miner_data['asc_elapsed'] =$data['asc_elapsed'];
 
 
 		$devices = request('devs');

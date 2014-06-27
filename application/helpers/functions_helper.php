@@ -257,4 +257,35 @@ function time_tran($time){
         }
     }
 }
+
+function timediff($timediff)
+{
+ 
+ 
+     $days = intval($timediff/86400);
+     $remain = $timediff%86400;
+     $hours = intval($remain/3600);
+     $remain = $remain%3600;
+     $mins = intval($remain/60);
+     $secs = $remain%60;
+
+     if($days)
+     	$res = $days.' d ';
+
+     if($hours)
+     	$res .= $hours.' h ';
+
+
+     if($mins)
+     	$res .= $mins.' m ';
+
+     if($secs)
+     	$res .= $secs.' s ';
+   
+     //if
+     //$res = array("day" => $days,"hour" => $hours,"min" => $mins,"sec" => $secs);
+     return $res;
+}
+
+
 ?>

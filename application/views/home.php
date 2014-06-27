@@ -43,7 +43,7 @@
  <table class="table table-striped" style="width:90%">
 <tr style="font-weight:bold;">
  
-	<td>GHS av</td><td>GHS 5s</td><td>GHS 15m</td><td>Accepted</td><td>Rejected</td><td>Rej%</td>
+	<td>Elapsed</td><td>GHS av</td><td>GHS 5s</td><td>GHS 15m</td><td>Accepted</td><td>Rejected</td><td>Rej%</td>
  
 </tr>
  <?php foreach ($sumary as $key=>$devs): ?>
@@ -66,7 +66,7 @@
              <?php foreach ($devs as $key=>$str): ?>
  				<?php
 					
- 				if($key=='Elapsed'||$key=='Last getwork'||$key=='Device Rejected%'||$key=='Difficulty Stale'||$key=='Difficulty Rejected'||$key=='Difficulty Accepted'||$key=='Local Work'||$key=='MHS 1m'||$key=='MHS 5m'||$key=='Getworks'||$key=='Hardware Errors'||$key=='Discarded'||$key=='Found Blocks'||$key=='Utility'||$key=='Stale'||$key=='Get Failures'||$key=='Remote Failures'||$key=='Network Blocks'||$key=='Total MH'||$key=='Work Utility'||$key=='Stratum URL'||$key=='Has GBT'||$key=='Pool Stale%'||$key=='Best Share'||$key=='Device Hardware%')
+ 				if( $key=='Last getwork'||$key=='Device Rejected%'||$key=='Difficulty Stale'||$key=='Difficulty Rejected'||$key=='Difficulty Accepted'||$key=='Local Work'||$key=='MHS 1m'||$key=='MHS 5m'||$key=='Getworks'||$key=='Hardware Errors'||$key=='Discarded'||$key=='Found Blocks'||$key=='Utility'||$key=='Stale'||$key=='Get Failures'||$key=='Remote Failures'||$key=='Network Blocks'||$key=='Total MH'||$key=='Work Utility'||$key=='Stratum URL'||$key=='Has GBT'||$key=='Pool Stale%'||$key=='Best Share'||$key=='Device Hardware%')
  					continue;
 
 					
@@ -88,7 +88,12 @@
  						$str = number_format($str,2);
  					}
 
+ 					if($key == 'Elapsed')
+ 					{
+ 						$str = timediff($str);
+ 						
 
+ 					}
 										
  					if($key=='MHS av'||$key=='MHS 5s'||$key=='MHS 1m'||$key=='MHS 5m'||$key=='MHS 15m')
  					{
@@ -97,7 +102,7 @@
  						$str=floor($str*0.001);
  						$str .=" GHS";
  					}
-									
+										
 
  				?>
 
@@ -154,7 +159,7 @@ if($key=='STATUS')continue;
 				
 				<?php
  
-					if($key!='POOL' && $key!='URL' && $key!='Status'&& $key!='User' && $key!='Priority' && $key!='Last Share Time'  )
+					if($key!='POOL' && $key!='URL'  && $key!='Status'&& $key!='User' && $key!='Priority' && $key!='Last Share Time'  )
 						continue;
 
 					
@@ -173,6 +178,7 @@ if($key=='STATUS')continue;
 
 					}
  
+
 										
 					if($key=='MHS av'||$key=='MHS 5s'||$key=='MHS 1m'||$key=='MHS 5m'||$key=='MHS 15m')
 					{
