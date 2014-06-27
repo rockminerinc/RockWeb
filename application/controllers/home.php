@@ -13,22 +13,7 @@ class Home extends CI_Controller {
 		$this->load->helper('functions');
   		$this->load->library('form_validation');
   		$this->init();
- 		//$command = SUDO_COMMAND.'date -R';
-		//exec( $command , $output );
-
-		// check
-		//if ( !empty( $output ) && count( $output ) > 0 ) 
-		//{
-			// match timezone
-			//preg_match( '/\+0800/' , $output[0] , $match_zone );
-
-			//if ( !empty( $match_zone[0] ) ) 
-			//{
-				//$zone = substr($output[0], -5);
-			//}
-		//} 
-		//echo $zone;		
-  		//date_default_timezone_set();
+ 
   		setTimezone('GMT');
 
 	}
@@ -46,15 +31,7 @@ class Home extends CI_Controller {
 				fclose($file_pointer);
 			}
 
-			if(!file_exists("/root/upgrade.sh"))
-			{
-				exec('sudo touch /root/upgrade.sh');
-				exec('sudo chmod 777 /root/upgrade.sh');
-				$file_pointer = fopen('/root/upgrade.sh','w');
-				$content = "#!/bin/bash \ncd /root \ngit clone https://github.com/rockminerinc/RockWeb.git \ncp RockWeb/* /usr/share/nginx/www/ -avpf\nrm -rf RockWeb";
-				fwrite($file_pointer,$head);
-				fclose($file_pointer);
-			}
+
 
  	}
 
@@ -808,7 +785,12 @@ iface eth0 inet static\n";
 
 	public function upgrade()
 	{
-
+		if(!file_exists("/root/upgrade.sh"))
+		{
+			echo '/root/upgrade.sh not exist!';
+ 			showmsg('/root/upgrade.sh not exist!');
+ 			exit;
+		}
 		$this->form_validation->set_rules('upgrade', 'upgrade', 'trim|required|xss_clean');	
 
 		if($this->form_validation->run())
@@ -820,6 +802,7 @@ iface eth0 inet static\n";
 			exec( $command , $output ,$result);
  			
 			showmsg('Wait for upgrading...',WEB_ROOT,'45');	
+
 
 
 		}
