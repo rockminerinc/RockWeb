@@ -785,12 +785,8 @@ iface eth0 inet static\n";
 
 	public function upgrade()
 	{
-		if(!file_exists("/root/upgrade.sh"))
-		{
-			echo '/root/upgrade.sh not exist!';
- 			showmsg('/root/upgrade.sh not exist!');
- 			exit;
-		}
+ 
+
 		$this->form_validation->set_rules('upgrade', 'upgrade', 'trim|required|xss_clean');	
 
 		if($this->form_validation->run())
