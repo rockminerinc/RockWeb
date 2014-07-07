@@ -61,7 +61,7 @@ class Monitor extends CI_Controller
 	{
 		$cmd_proc_func = array(
 			'reboot' => 'reboot_cmd_proc',
-			'pool' => 'cgminer_cmd_proc',
+			'devs' => 'cgminer_cmd_proc',
 			);
 
 		$result = json_decode($rsp, true);
