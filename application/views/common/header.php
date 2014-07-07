@@ -14,7 +14,7 @@ if($this->router->fetch_method()=='index')
 }
 ?>
 
-<title>RockWeb</title>
+<title><?= $title ?></title>
 <link href="static/css/bootstrap.min.css" rel="stylesheet" media="screen">
 <link href="static/css/layout.css" rel="stylesheet" type="text/css" />
 </head>

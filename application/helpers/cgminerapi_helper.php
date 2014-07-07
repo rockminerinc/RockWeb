@@ -18,7 +18,7 @@ function getsock($addr, $port)
  if ($res === false)
  {
 	$error = socket_strerror(socket_last_error());
-	$msg = '<center class="alert alert-danger bs-alert-old-docs">CGMiner is not running...</center>';
+	$msg = '<center class="alert alert-danger bs-alert-old-docs">CGMiner is not running...Please wait for a minute to restart...</center>';
 
 	socket_close($socket);
 	echo $msg;

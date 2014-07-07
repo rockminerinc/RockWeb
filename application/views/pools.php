@@ -75,7 +75,7 @@ if($key=='STATUS')continue;
 
 <form name="form3" method="post" action="">
 <table style="float:left;" border="0" cellspacing="0">
-<tbody>
+ 
 <tr>
 	<td align="right">Pool 1</td>
 	<td align="left">
@@ -121,6 +121,21 @@ if($key=='STATUS')continue;
 </tr>
 
 
+ </table>
+
+<table style="">
+<tr>
+	<td align="right">Frequency</td>
+	<td align="left">
+		<select name="frequency">
+			<option value = "300" <?php if($frequency=='300') echo 'selected';?>  >300M</option>
+			<option value = "320" <?php if($frequency=='320') echo 'selected';?>  >320M</option>
+			<option value = "350" <?php if($frequency=='350') echo 'selected';?>  >350M</option>
+		</select>
+	</td>
+</tr>
+ 
+ </table>
 
 <tr>
 <td  align="center">
@@ -128,7 +143,7 @@ if($key=='STATUS')continue;
 <input name="update" value="Update" type="submit"   class="btn btn-primary">
 </td>
 </tr>
-</tbody></table>
+
 
 </form>
 

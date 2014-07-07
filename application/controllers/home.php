@@ -37,11 +37,24 @@ class Home extends CI_Controller {
 
 	public function index()
 	{
+
+			$lines = file('/etc/network/interfaces');
+			foreach ($lines as $line_num => $line) 
+			{
+				$address = strstr($line, 'address');
+				if($address)
+				{
+					$address_arr = explode(" ",$address);
+					$this->data['ip_adress']=$address_arr['1'];
+				}
+			}
+
 		$this->data['debug']  = $this->input->get('debug');
 		$this->data['sumary'] = request('summary');
 		$this->data['pools'] = request('pools');
 		$this->data['devss'] = request('devs');
-		$this->data['title']= 'summary';
+
+		$this->data['title']= $this->data['ip_adress'];
 		$this->load->view('common/header', $this->data);	
 		$this->load->view('common/left');	
 		$this->load->view('home');	
@@ -209,7 +222,7 @@ class Home extends CI_Controller {
 					$contents= file_get_contents($filename, 0, $ctx); 
 
 					//$contents = fread($file_pointer, filesize ($filename));
-					var_dump($contents);
+					//var_dump($contents);
 					$this->data =	json_decode($contents);
 					//$this->data['dev_name'] = getconfig("./data/setting.inc.php", "dev_name", $type="string");
 					//$this->data['dev_id'] = getconfig("./data/setting.inc.php", "dev_id", $type="string");
@@ -316,8 +329,7 @@ class Home extends CI_Controller {
 		$data['asc_last_share_time']  	= 	$sumary['SUMMARY']['Last getwork'];
  
 		$data['event_time']  	=	time();
- 
-
+  
 		$miner_data['ip'] = $data['ip'];
 		$miner_data['ipint'] =$data['ipint'];
 		$miner_data['dev_name'] =$data['dev_name'];
@@ -349,8 +361,7 @@ class Home extends CI_Controller {
 		$miner_data['temperature'] = floor($temp_arry[$max_key]);//max Temperature
 
  		$miner_json = json_encode($miner_data);
-
- 		
+  		
 		$url=$server."index.php?c=home&m=getdata&data=".$miner_json;
  
 		$ctx = stream_context_create(array( 
@@ -361,12 +372,8 @@ class Home extends CI_Controller {
 			); 
 		$re=file_get_contents($url, 0, $ctx);//($url);
 
- 
 		echo $re;
- 
-
-		
-
+  
 	}
 
 	public function pools()
@@ -378,6 +385,7 @@ class Home extends CI_Controller {
 		$this->form_validation->set_rules('pool_passwd1', 'pool_passwd1', 'trim|xss_clean');
 		$this->form_validation->set_rules('pool_url2', 'pool_url2', 'trim|xss_clean');
 		$this->form_validation->set_rules('pool_worker2', 'pool_worker2', 'trim|xss_clean');
+		$this->form_validation->set_rules('frequency', 'frequency', 'trim|xss_clean');
 
 		if($this->form_validation->run())
 		{
@@ -390,6 +398,7 @@ class Home extends CI_Controller {
 			$pool2_datas['user'] =$this->input->post('pool_worker2', TRUE);
 			$pool2_datas['pass'] =$this->input->post('pool_passwd2', TRUE);
 			//$pool2_datas['freq'] =$this->input->post('freq', TRUE);
+			$frequency =$this->input->post('frequency', TRUE);
 
 			$content['pools']=array($pool1_datas,$pool2_datas); 
 			$content['api-listen']=true;
@@ -407,6 +416,11 @@ class Home extends CI_Controller {
 			$content['icarus-options']='115200:1:1';
 			$content['api-description']='cgminer 4.3.3';
 			$content['hotplug']='5';
+
+			if($frequency	==	'')
+				$frequency=320;
+
+			$content['rmu-auto']=$frequency;
 
 			$data = json_encode($content);
 			$data=str_replace("\\/", "/",  $data);
@@ -785,7 +799,7 @@ iface eth0 inet static\n";
 
 	public function upgrade()
 	{
- 
+
 
 		$this->form_validation->set_rules('upgrade', 'upgrade', 'trim|required|xss_clean');	
 
