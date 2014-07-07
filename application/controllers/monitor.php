@@ -101,7 +101,16 @@ class Monitor extends CI_Controller
 
 	private function cgminer_cmd_proc($cmd)
 	{
-		$data['cmd']['result'] = request_raw($cmd['operation'].' '.$cmd['para']);
+		if(trim($cmd['para']))
+		{
+			$opt = $cmd['operation'].' '.$cmd['para'];
+		}
+		else
+		{
+			$opt = $cmd['operation'];
+		}
+
+		$data['cmd']['result'] = request_raw($opt);
 		$data['cmd']['id'] = $cmd['id'];
 
 		$resultCode = explode(',', $data['cmd']['result']);
