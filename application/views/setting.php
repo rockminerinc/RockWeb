@@ -11,17 +11,17 @@
 		<input name="dev_name" value="<?php echo $dev_name;?>" size="30" type="text" mouseev="true" keyev="true" >
 	</td>
 </tr>
-<tr>
+<!--tr>
 	<td align="right">Device ID</td>
 	<td align="left">
 		<input name="dev_id" value="<?php echo $dev_id;?>" size="30" type="text"></td>
-</tr>
+</tr-->
 <tr>
 	<td align="right">Monitor URL</td>
 	<td align="left">
 		<input name="monitor_url" value="<?php echo $monitor_url;?>" size="30" type="text"></td>
 </tr>
-<tr>
+<!--tr>
 	<td align="right">LANG</td>
 	<td align="left">
 		<input name="lang" value="<?php echo $lang;?>" size="30" type="text">
@@ -32,7 +32,7 @@
 	<td align="left">
 		<input name="timezone" value="<?php echo $timezone;?>" size="30" type="text">
 	</td>
-</tr>
+</tr-->
 
 
 

@@ -10,7 +10,6 @@
 
 				<li <?php echo $this->router->fetch_method()=='CheckStatus' ? ' class="active"' : ''?> ><a href = "?c=home&m=CheckStatus" >Check Status</a></li> 
 				<li  <?php echo $this->router->fetch_method()=='setting' ? ' class="active"' : ''?> ><a href = "?c=home&m=setting"  >Setting</a></li> 
-				<li  <?php echo $this->router->fetch_method()=='upgrade' ? ' class="active"' : ''?> ><a href = "?c=home&m=upgrade"  >Upgrade</a></li> 
 				<li  <?php echo $this->router->fetch_method()=='reboot' ? ' class="active"' : ''?> ><a href = "?c=home&m=reboot"  >Reboot</a></li> 
 			</ul>
  

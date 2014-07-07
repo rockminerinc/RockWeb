@@ -24,7 +24,7 @@ define('CGMINER_PATH311','/home/pi/cgminer-3.1.1/cgminer');
 define( 'SUDO_COMMAND' , 'sudo ' );
 define( 'CGMINER_CONFIG_ROOT' , '/home/pi/cgminer.conf' );
 define( 'TIME_SERVER' , 'tick.greyware.com' );
-define( 'CURRENT_VERSION' , '0.91' );
+define( 'CURRENT_VERSION' , '0.93' );
 
 /*
 |--------------------------------------------------------------------------
@@ -54,7 +54,7 @@ $config['index_page'] = 'index.php';
 | 'ORIG_PATH_INFO'	Uses the ORIG_PATH_INFO
 |
 */
-$config['uri_protocol']	= 'AUTO';
+$config['uri_protocol']	= 'PATH_INFO';
 
 /*
 |--------------------------------------------------------------------------

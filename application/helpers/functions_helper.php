@@ -128,6 +128,21 @@ function showmsg($msg, $url_forward=WEB_ROOT, $second=5)
 	return $result;
 	}
 
+function curl_access($url)
+{
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, $url);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt($ch, CURLOPT_HEADER, 0);
+	$output = curl_exec($ch);
+	if ($output === FALSE) {
+	    return "cURL Error: " . curl_error($ch);
+	}
+	curl_close($ch);
+	return $output;
+}
+
+
 function getip()
 {
 		@exec("ifconfig -a", $return_array);
@@ -148,6 +163,26 @@ function getip()
 		return $ip_addr;
 
 }
+
+
+function getmac()
+{
+		@exec("ifconfig -a", $return_array);
+
+		$temp_array = array();
+		foreach ( $return_array as $value )
+		{
+			if ( preg_match( "/[0-9a-f][0-9a-f][:-]"."[0-9a-f][0-9a-f][:-]"."[0-9a-f][0-9a-f][:-]"."[0-9a-f][0-9a-f][:-]"."[0-9a-f][0-9a-f][:-]"."[0-9a-f][0-9a-f]/i", $value, $temp_array ) )
+			{
+				$mac_addr = $temp_array[0];
+				break;
+			}
+		}
+
+		unset($temp_array);
+		return $mac_addr;		
+ }
+
 
 //配置文件数据值获取。
 //默认没有第三个参数时，按照字符串读取提取''中或""中的内容
@@ -177,6 +212,7 @@ function getconfig($file, $ini, $type="string")
 //如果有第四个参数时为int时按照数字int处理。
 function updateconfig($file, $ini, $value,$type="string")
 {
+
 	$str = file_get_contents($file);
 	$str2="";
 	if($type=="int") 
@@ -221,5 +257,55 @@ function dev_num()
 		return $dev_num;
 
 	}
+
+ 
+
+function time_tran($time){
+    $t=time()-$time;
+    $f=array(
+        '31536000'=>' Year',
+        '2592000'=>' month',
+        '604800'=>' week',
+        '86400'=>' day',
+        '3600'=>' hour',
+        '60'=>' minutes',
+        '1'=>' seconds'
+    );
+    foreach ($f as $k=>$v)    {
+        if (0 !=$c=floor($t/(int)$k)) {
+            return $c.$v.' ago ';
+        }
+    }
+}
+
+function timediff($timediff)
+{
+ 
+ 
+     $days = intval($timediff/86400);
+     $remain = $timediff%86400;
+     $hours = intval($remain/3600);
+     $remain = $remain%3600;
+     $mins = intval($remain/60);
+     $secs = $remain%60;
+
+     if($days)
+     	$res = $days.' d ';
+
+     if($hours)
+     	$res .= $hours.' h ';
+
+
+     if($mins)
+     	$res .= $mins.' m ';
+
+     if($secs)
+     	$res .= $secs.' s ';
+   
+     //if
+     //$res = array("day" => $days,"hour" => $hours,"min" => $mins,"sec" => $secs);
+     return $res;
+}
+
 
 ?>
