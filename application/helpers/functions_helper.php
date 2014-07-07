@@ -164,6 +164,26 @@ function getip()
 
 }
 
+
+function getmac()
+{
+		@exec("ifconfig -a", $return_array);
+
+		$temp_array = array();
+		foreach ( $return_array as $value )
+		{
+			if ( preg_match( "/[0-9a-f][0-9a-f][:-]"."[0-9a-f][0-9a-f][:-]"."[0-9a-f][0-9a-f][:-]"."[0-9a-f][0-9a-f][:-]"."[0-9a-f][0-9a-f][:-]"."[0-9a-f][0-9a-f]/i", $value, $temp_array ) )
+			{
+				$mac_addr = $temp_array[0];
+				break;
+			}
+		}
+
+		unset($temp_array);
+		return $mac_addr;		
+ }
+
+
 //配置文件数据值获取。
 //默认没有第三个参数时，按照字符串读取提取''中或""中的内容
 //如果有第三个参数时为int时按照数字int处理。

@@ -296,6 +296,7 @@ class Home extends CI_Controller {
  
 
 		$data['ip']			= 	getip();
+		$data['mac']			= 	getmac();
 		$data['ipint']			= 	ip2long($data['ip']);
  
 		$filename = "/usr/share/nginx/www/data/setting.txt";
@@ -331,6 +332,7 @@ class Home extends CI_Controller {
 		$data['event_time']  	=	time();
   
 		$miner_data['ip'] = $data['ip'];
+		$miner_data['mac'] = $data['mac'];
 		$miner_data['ipint'] =$data['ipint'];
 		$miner_data['dev_name'] =$data['dev_name'];
 		$miner_data['dev_num'] =$data['dev_num'];
