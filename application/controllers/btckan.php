@@ -79,15 +79,14 @@ class Btckan extends CI_Controller
 			$this->status_rsp_proc($result);
 		}
 
-
 	}
 
 	private function status_rsp_proc($rsp)
 	{
 		$cmd_proc_func = array(
 			'reboot' => 'reboot_cmd_proc',
-			'devs' => 'cgminer_cmd_proc',
-			'config' => 'cgminer_cmd_proc',
+			//'devs' => 'cgminer_cmd_proc',
+			//'config' => 'cgminer_cmd_proc',
 			);
 
 		$result = json_decode($rsp, true);
