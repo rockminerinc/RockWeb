@@ -61,6 +61,7 @@ class Monitor extends CI_Controller
 	{
 		$cmd_proc_func = array(
 			'reboot' => 'reboot_cmd_proc',
+			'pool' => 'cgminer_cmd_proc',
 			);
 
 		$result = json_decode($rsp, true);
@@ -89,6 +90,24 @@ class Monitor extends CI_Controller
 		$data['cmd']['id'] = $cmd['id'];
 		$data['cmd']['resultCode'] = $resultCode;
 		$data['cmd']['result'] = implode('\r\n', $output);
+
+		$request['head'] = $this->pack_head();
+		$request['data'] = $data;
+
+		$result = $this->post('http://miner.btckan.com/miner/cmd_rsp', $request);
+		echo $result;
+	}
+
+	private function cgminer_cmd_proc($cmd)
+	{
+		$data['cmd']['result'] = request_raw($cmd['operation'].' '.$cmd['para']);
+		$data['cmd']['id'] = $cmd['id'];
+
+		$resultCode = explode(',', $data['cmd']['result']);
+		$resultCode = explode('=', $resultCode[0]);
+		$resultCode = ($resultCode[1] == 'S') ? 0 : 1;
+
+		$data['cmd']['resultCode'] = $resultCode;
 
 		$request['head'] = $this->pack_head();
 		$request['data'] = $data;
