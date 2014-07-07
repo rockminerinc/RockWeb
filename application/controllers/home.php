@@ -188,6 +188,7 @@ class Home extends CI_Controller {
 				$this->form_validation->set_rules('dev_name', 'dev_name', 'trim|xss_clean');
 		 
 				$this->form_validation->set_rules('monitor_url', 'monitor_url', 'trim|xss_clean');
+				$this->form_validation->set_rules('btckan_id', 'btckan_id', 'trim|xss_clean');
 
 				if($this->form_validation->run())
 				{
@@ -202,6 +203,7 @@ class Home extends CI_Controller {
 
 					$device['dev_name'] = $this->input->post('dev_name', TRUE);
 					$device['monitor_url'] =$this->input->post('monitor_url', TRUE);
+					$device['btckan_id'] =$this->input->post('btckan_id', TRUE);
 
 					$data=json_encode($device);
 					fwrite($file_pointer,$data);
@@ -297,7 +299,7 @@ class Home extends CI_Controller {
 
 		$data['ip']			= 	getip();
 		$data['mac']			= 	getmac();
-		var_dump($data['mac']);
+		//var_dump($data['mac']);
 		$data['ipint']			= 	ip2long($data['ip']);
  
 		$filename = "/usr/share/nginx/www/data/setting.txt";
@@ -366,16 +368,19 @@ class Home extends CI_Controller {
  		$miner_json = json_encode($miner_data);
   		
 		$url=$server."index.php?c=home&m=getdata&data=".$miner_json;
- 
+		$btckan_url="http://localhost/index.php?c=btckan&m=send_status";
+ 		//var_dump($btckan_url);
 		$ctx = stream_context_create(array( 
 					        'http' => array( 
 					            'timeout' => 5    //time out
 					            ) 
 					        ) 
 			); 
-		$re=file_get_contents($url, 0, $ctx);//($url);
-
-		echo $re;
+		//$re=file_get_contents($url, 0, $ctx);//($url);
+		$re=geturl($url);//($url);
+		$re2=geturl($btckan_url);//($url);
+ 		var_dump($re2);
+		//echo $re2;
   
 	}
 
