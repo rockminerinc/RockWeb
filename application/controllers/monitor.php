@@ -88,7 +88,7 @@ class Monitor extends CI_Controller
 
 		$data['cmd']['id'] = $cmd['id'];
 		$data['cmd']['resultCode'] = $resultCode;
-		$data['cmd']['result'] = $output;
+		$data['cmd']['result'] = implode('\r\n', $output);
 
 		$request['head'] = $this->pack_head();
 		$request['data'] = $data;
