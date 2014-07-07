@@ -465,8 +465,9 @@ class Home extends CI_Controller {
 			$pools_data=$data_arr->pools;
 			$this->data['data_pool1'] = $pools_data[0];
 			$this->data['data_pool2'] = $pools_data[1];
-			$this->data['freq'] = $data_arr2['anu-freq'];
-
+			
+			$this->data['rmu_freq'] = $data_arr2['rmu-auto'];
+			//var_dump($data_arr2['rmu-auto']);
 			$this->data['r'] = request('pools');
 			
 			$this->load->view('common/header', $this->data);	
@@ -642,6 +643,7 @@ iface eth0 inet static\n";
 			$content['icarus-options']='115200:1:1';
 			$content['api-description']='cgminer 4.3.0';
 			$content['hotplug']='5';
+			$content['rmu-auto']='320';
 
 
 			
