@@ -297,6 +297,7 @@ class Home extends CI_Controller {
 
 		$data['ip']			= 	getip();
 		$data['mac']			= 	getmac();
+		var_dump($data['mac']);
 		$data['ipint']			= 	ip2long($data['ip']);
  
 		$filename = "/usr/share/nginx/www/data/setting.txt";
