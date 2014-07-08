@@ -123,6 +123,8 @@ if($key=='STATUS')continue;
 
  </table>
 
+<div style="clear:both;">
+	
 <table style="">
 <tr>
 	<td align="right">Frequency</td>
