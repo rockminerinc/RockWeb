@@ -21,19 +21,13 @@
 	<td align="left">
 		<input name="monitor_url" value="<?php echo $monitor_url;?>" size="30" type="text"></td>
 </tr>
-<!--tr>
-	<td align="right">LANG</td>
-	<td align="left">
-		<input name="lang" value="<?php echo $lang;?>" size="30" type="text">
-	</td>
-</tr>
-<tr>
-	<td align="right">TimeZone</td>
-	<td align="left">
-		<input name="timezone" value="<?php echo $timezone;?>" size="30" type="text">
-	</td>
-</tr-->
 
+<tr>
+	<td align="right">BTCKAN Device ID </td>
+	<td align="left">
+		<input name="btckan_id" value="<?php echo $btckan_id;?>" size="30" type="text"></td>
+</tr>
+ 
 
 
 <tr>
