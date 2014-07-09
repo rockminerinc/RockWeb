@@ -63,6 +63,16 @@ class Monitor extends CI_Controller
 			'reboot' => 'reboot_cmd_proc',
 			'devs' => 'cgminer_cmd_proc',
 			'config' => 'cgminer_cmd_proc',
+			'pga' => 'cgminer_cmd_proc',
+			'pgacount' => 'cgminer_cmd_proc',
+			'notify' => 'cgminer_cmd_proc',
+			'devdetails' => 'cgminer_cmd_proc',
+			'restart' => 'cgminer_cmd_proc',
+			'stats' => 'cgminer_cmd_proc',
+			'check' => 'cgminer_cmd_proc',
+			'coin' => 'cgminer_cmd_proc',
+			'usbstats' => 'cgminer_cmd_proc',
+			'lcd' => 'cgminer_cmd_proc',
 			);
 
 		$result = json_decode($rsp, true);
