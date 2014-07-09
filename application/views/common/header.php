@@ -37,7 +37,7 @@ if($this->router->fetch_method()=='index')
             <ul class="nav">
               <li class="active"><a href="<?= WEB_ROOT ?>">Home</a></li>
               <li><a href="http://forum.rockminer.com/" target="_blank">Forum</a></li>
-              <li><a href="#contact">Contact</a></li>
+              <li><a href="https://github.com/rockminerinc/rockminerinc.github.io/blob/master/Mining_handbook.md">Help</a></li>
               
 
             </ul>
