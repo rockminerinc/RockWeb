@@ -394,6 +394,7 @@ class Home extends CI_Controller {
 		$this->form_validation->set_rules('pool_url2', 'pool_url2', 'trim|xss_clean');
 		$this->form_validation->set_rules('pool_worker2', 'pool_worker2', 'trim|xss_clean');
 		$this->form_validation->set_rules('frequency', 'frequency', 'trim|xss_clean');
+		$this->form_validation->set_rules('fanspeed', 'fanspeed', 'trim|xss_clean');
 
 		if($this->form_validation->run())
 		{
@@ -407,6 +408,7 @@ class Home extends CI_Controller {
 			$pool2_datas['pass'] =$this->input->post('pool_passwd2', TRUE);
 			//$pool2_datas['freq'] =$this->input->post('freq', TRUE);
 			$frequency =$this->input->post('frequency', TRUE);
+			$fanspeed =$this->input->post('fanspeed', TRUE);
 
 			$content['pools']=array($pool1_datas,$pool2_datas); 
 			$content['api-listen']=true;
@@ -428,7 +430,11 @@ class Home extends CI_Controller {
 			if($frequency	==	'')
 				$frequency=320;
 
+			if($fanspeed	==	'')
+				$fanspeed=0;
+
 			$content['rmu-auto']=$frequency;
+			$content['rmu-fan']=$fanspeed;
 
 			$data = json_encode($content);
 			$data=str_replace("\\/", "/",  $data);
@@ -472,6 +478,7 @@ class Home extends CI_Controller {
 			$this->data['data_pool2'] = $pools_data[1];
 			
 			$this->data['rmu_freq'] = $data_arr2['rmu-auto'];
+			$this->data['rmu_fan'] = $data_arr2['rmu-fan'];
 			//var_dump($data_arr2['rmu-auto']);
 			$this->data['r'] = request('pools');
 			

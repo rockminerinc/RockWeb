@@ -124,7 +124,7 @@ if($key=='STATUS')continue;
  </table>
 
 <div style="clear:both;">
-	
+
 <table style="">
 <tr>
 	<td align="right">Frequency</td>
@@ -136,15 +136,30 @@ if($key=='STATUS')continue;
 		</select>
 	</td>
 </tr>
+</table>
+
+<table style="">
+<tr>
+	<td align="right">Fan Speed</td>
+	<td align="left">
+		<select name="fanseed">
+			<option value = "0" <?php if($rmu_fan=='0') echo 'selected';?> >Auto</option>
+			<option value = "100" <?php if($rmu_fan=='100') echo 'selected';?>  >Full speed</option>
+
+		</select>
+	</td>
+</tr>
  
  </table>
 
+ <table style="">
 <tr>
 <td  align="center">
 <input type="button" value="Refresh" onclick="window.location.href=''"   class="btn btn-primary">
 <input name="update" value="Update" type="submit"   class="btn btn-primary">
 </td>
 </tr>
+ </table>
 
 
 </form>
