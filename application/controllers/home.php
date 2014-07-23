@@ -379,7 +379,7 @@ class Home extends CI_Controller {
 		$re=file_get_contents($url, 0, $ctx);//($url);
 		//$re=geturl($url);//($url);
 		$re2=geturl($btckan_url);//($url);
- 		var_dump($re2);
+ 		var_dump($re);
 		//echo $re2;
   
 	}
