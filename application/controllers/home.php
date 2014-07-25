@@ -13,7 +13,6 @@ class Home extends CI_Controller {
 		$this->load->helper('functions');
   		$this->load->library('form_validation');
   		$this->init();
- 
   		setTimezone('GMT');
 
 	}
@@ -1015,6 +1014,11 @@ iface eth0 inet static\n";
 
 	public function SaveHashrate()
 	{
+			$savedata=0;
+			
+			if(!$savedata)
+			exit;
+
 			if(!file_exists("/usr/share/nginx/www/data/hashrate.txt"))
 			{
 				exec('touch /usr/share/nginx/www/data/hashrate.txt');
