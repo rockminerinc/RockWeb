@@ -562,9 +562,6 @@ iface eth0 inet static\n";
 			$content .= 'netmask '.$JMSK."\n";
 			$content .= 'gateway '.$JGTW."\n";
 
-			//$newmac = $this->generatemac();
-			//$content .= 'hwaddress ether '.$newmac."\n";
-
 
 			$file_pointer = @fopen('/etc/network/interfaces','w'); 
 			if($file_pointer === false)
@@ -575,21 +572,7 @@ iface eth0 inet static\n";
 			}   
 			else
 			{
-				/*
-					$macfilename = "/usr/share/nginx/www/data/mac.txt";
-					$ctx = stream_context_create(array( 
-					        'http' => array( 
-					            'timeout' => 1    //设置超时
-					            ) 
-					        ) 
-					    ); 
 
-					$newmac= file_get_contents($macfilename, 0, $ctx); 
-
-					@exec("sudo ifconfig eth0 down");
-					@exec("ifconfig eth0 hw ether ".$newmac);
-					@exec("ifconfig eth0 up ");	
-				*/
 				fwrite($file_pointer,$content);
 				fclose($file_pointer);
 				exec('sudo /etc/init.d/networking restart');
@@ -626,28 +609,15 @@ iface eth0 inet static\n";
 				//echo $gateway_id;
 				}
 
-				//mac
-				$macfilename = "/root/.cubie-emac";
-
-				$ctx = stream_context_create(array( 
-					        'http' => array( 
-					            'timeout' => 1    //设置超时
-					            ) 
-					        ) 
-					    ); 
-
-				$this->data['mac'] = file_get_contents($macfilename, 0, $ctx); 
-
-				//$this->data['mac']=end($mac_arr);
-				//var_dump($mac_arr );
-				//echo $gateway_id;
-				
-
-
-
-
+ 
 				
 			}
+
+ 
+				$command = 'sudo cat /root/.cubian-emac';
+    			@exec( $command , $output ,$result);
+ 				$this->data['mac']= $output[0];
+ 
 
 			$this->load->view('common/header', $this->data);	
 			$this->load->view('common/left');	
