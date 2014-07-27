@@ -40,6 +40,8 @@ class Home extends CI_Controller {
 				$newmac = $this->generatemac();
 				fwrite($file_pointer,$newmac);
 				fclose($file_pointer);
+				@exec('sudo reboot');
+
 			}
 
 
@@ -560,8 +562,8 @@ iface eth0 inet static\n";
 			$content .= 'netmask '.$JMSK."\n";
 			$content .= 'gateway '.$JGTW."\n";
 
-			$newmac = $this->generatemac();
-			$content .= 'hwaddress ether '.$newmac."\n";
+			//$newmac = $this->generatemac();
+			//$content .= 'hwaddress ether '.$newmac."\n";
 
 
 			$file_pointer = @fopen('/etc/network/interfaces','w'); 
@@ -625,14 +627,21 @@ iface eth0 inet static\n";
 				}
 
 				//mac
-				$mac = strstr($line, 'hwaddress');
-				if($mac)
-				{
-				$mac_arr = explode(" ",$mac);
-				$this->data['mac']=end($mac_arr);
+				$macfilename = "/root/.cubie-emac";
+
+				$ctx = stream_context_create(array( 
+					        'http' => array( 
+					            'timeout' => 1    //设置超时
+					            ) 
+					        ) 
+					    ); 
+
+				$this->data['mac'] = file_get_contents($macfilename, 0, $ctx); 
+
+				//$this->data['mac']=end($mac_arr);
 				//var_dump($mac_arr );
 				//echo $gateway_id;
-				}
+				
 
 
 
