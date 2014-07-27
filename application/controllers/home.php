@@ -618,9 +618,8 @@ iface eth0 inet static\n";
 				$macaddr = strstr($line, 'hwaddress');
 				if($macaddr)
 				{
-				//$gateway_arr = explode(" ",$macaddr);
-				$this->data['mac']=end($macaddr); 
-				//echo $gateway_id;
+				$mac_arr = explode(" ",$macaddr);
+				$this->data['mac']=end($mac_arr);
 				}
  
 				
