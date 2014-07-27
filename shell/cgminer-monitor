@@ -1,0 +1,45 @@
+#!/bin/sh
+#
+# crontab check script
+# @since 2014-04
+#
+# crontab: */2 * * * * sh -x /usr/local/bin/cgminer-monitor >> /tmp/cgminer-monitor.log 2>&1
+#
+
+PATH=/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin
+
+# This if for make sure the start cgminer when there is network problem
+C=`pidof cgminer | wc -l`
+if [ "$C" != "1" ]; then
+    killall -s 9 cgminer
+    sleep 3
+    /etc/init.d/cgminer start
+    exit 0;
+fi
+
+B=`cgminer-api devs | grep "^   \[Last Valid Work\]" | grep -o "[0-9]\+"`
+if [ "$?" != "0" ]; then
+    killall -s 9 cgminer
+    sleep 3
+    /etc/init.d/cgminer start
+    exit 0;
+fi
+
+A=`cat /tmp/cm.log`
+echo -n "$B" > /tmp/cm.log
+if [ "$A" -eq "$B" ]; then
+    killall -s 9 cgminer
+    sleep 3
+    /etc/init.d/cgminer start
+    exit 0;
+fi
+
+ULAST=`cat /tmp/susb.log`
+UNOW=`ls -l /dev/serial/by-id | wc -l`
+echo -n "$UNOW" > /tmp/susb.log
+if [ "$UNOW" != "$ULAST" ]; then
+    killall -s 9 cgminer
+    sleep 3
+    /etc/init.d/cgminer start
+    exit 0;
+fi
