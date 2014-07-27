@@ -20,6 +20,8 @@ class Home extends CI_Controller {
 
  	private function init()
  	{
+
+
 			if(!file_exists("/usr/share/nginx/www/data/hashrate.txt"))
 			{
 				exec('sudo touch /usr/share/nginx/www/data/hashrate.txt');
@@ -30,6 +32,16 @@ class Home extends CI_Controller {
 				fclose($file_pointer);
 			}
 
+			if(!file_exists("/usr/share/nginx/www/data/mac.txt"))
+			{
+				exec('sudo touch /usr/share/nginx/www/data/mac.txt');
+				exec('sudo chmod 777 /usr/share/nginx/www/data/mac.txt');
+				$file_pointer = fopen('/usr/share/nginx/www/data/mac.txt','w');
+				$newmac = $this->generatemac();
+			
+				fwrite($file_pointer,$newmac);
+				fclose($file_pointer);
+			}
 
 
  	}
@@ -63,9 +75,6 @@ class Home extends CI_Controller {
 	}
 	
 
-
-
-
 	public function devs()
 	{
 		$this->data['r'] = request('devs');
@@ -77,6 +86,43 @@ class Home extends CI_Controller {
 		
 		$this->load->view('common/footer');	
 	}
+
+	private function generatemac()
+	{
+
+			$strTmp = '1234567890abcdef';
+			$mac_str_1_p1 = $strTmp{rand(0, strlen($strTmp)-1)};
+			$mac_str_1_p2 = $strTmp{rand(0, strlen($strTmp)-1)};
+			$mac_str_2_p1 = $strTmp{rand(0, strlen($strTmp)-1)};
+			$mac_str_2_p2 = $strTmp{rand(0, strlen($strTmp)-1)};
+			$mac_str_3_p1 = $strTmp{rand(0, strlen($strTmp)-1)};
+			$mac_str_3_p2 = $strTmp{rand(0, strlen($strTmp)-1)};
+			$mac_str_4_p1 = $strTmp{rand(0, strlen($strTmp)-1)};
+			$mac_str_4_p2 = $strTmp{rand(0, strlen($strTmp)-1)};
+
+			$mac_str_1 = $mac_str_1_p1.$mac_str_1_p2;
+			$mac_str_2 = $mac_str_2_p1.$mac_str_2_p2;
+			$mac_str_3 = $mac_str_3_p1.$mac_str_3_p2;
+			$mac_str_4 = $mac_str_4_p1.$mac_str_4_p2;
+
+			$aryMacData = explode( ':' , $old_mac );
+			$aryMacData[count( $aryMacData )-4] = $mac_str_1;
+			$aryMacData[count( $aryMacData )-3] = $mac_str_2;
+			$aryMacData[count( $aryMacData )-2] = $mac_str_3;
+			$aryMacData[count( $aryMacData )-1] = $mac_str_4;
+
+			$new_mac = implode( ':' , $aryMacData );
+			$newmac = '70:00'.$new_mac;
+			return $newmac;
+			//@exec("sudo fconfig eth0 down");
+			//@exec("ifconfig eth0 hw ether ".$newmac);
+			//@exec("ifconfig eth0 up ");
+
+	}
+
+
+
+
 
 	public function upgrade2()
 	{
@@ -515,6 +561,9 @@ iface eth0 inet static\n";
 			$content .= 'netmask '.$JMSK."\n";
 			$content .= 'gateway '.$JGTW."\n";
 
+			$newmac = $this->generatemac();
+			$content .= 'hwaddress ether  '.$newmac."\n";
+
 
 			$file_pointer = @fopen('/etc/network/interfaces','w'); 
 			if($file_pointer === false)
@@ -525,6 +574,21 @@ iface eth0 inet static\n";
 			}   
 			else
 			{
+				/*
+					$macfilename = "/usr/share/nginx/www/data/mac.txt";
+					$ctx = stream_context_create(array( 
+					        'http' => array( 
+					            'timeout' => 1    //设置超时
+					            ) 
+					        ) 
+					    ); 
+
+					$newmac= file_get_contents($macfilename, 0, $ctx); 
+
+					@exec("sudo ifconfig eth0 down");
+					@exec("ifconfig eth0 hw ether ".$newmac);
+					@exec("ifconfig eth0 up ");	
+				*/
 				fwrite($file_pointer,$content);
 				fclose($file_pointer);
 				exec('sudo /etc/init.d/networking restart');
@@ -541,6 +605,7 @@ iface eth0 inet static\n";
 				if($address)
 				{
 					$address_arr = explode(" ",$address);
+					if($address_arr['1']!='ether')
 					$this->data['ip_adress']=$address_arr['1'];
 				}
 				
@@ -1015,7 +1080,7 @@ iface eth0 inet static\n";
 	public function SaveHashrate()
 	{
 			$savedata=0;
-			
+
 			if(!$savedata)
 			exit;
 
