@@ -32,17 +32,20 @@ class Home extends CI_Controller {
 				fclose($file_pointer);
 			}
 
+			/*
 			if(!file_exists("/usr/share/nginx/www/data/mac.txt"))
 			{
 				exec('sudo touch /usr/share/nginx/www/data/mac.txt');
-				//exec('sudo chmod 777 /usr/share/nginx/www/data/mac.txt');
+				exec('sudo chmod 777 /root/.cubian-emac');
+				$file_pointer = fopen('/root/.cubian-emac','w');
 				$file_pointer = fopen('/root/.cubian-emac','w');
 				$newmac = $this->generatemac();
-				fwrite($file_pointer,$newmac);
-				fclose($file_pointer);
-				@exec('sudo reboot');
+				file_put_contents($file_pointer,$newmac);
+				//fwrite($file_pointer,$newmac);
+				//fclose($file_pointer);
+				//@exec('sudo reboot');
 
-			}
+			}*/
 
 
  	}
@@ -561,6 +564,8 @@ iface eth0 inet static\n";
 			$content .= 'address '.$JMIP."\n";
 			$content .= 'netmask '.$JMSK."\n";
 			$content .= 'gateway '.$JGTW."\n";
+			$newmac = $this->generatemac();
+			$content .= 'hwaddress ether '.$newmac."\n";
 
 
 			$file_pointer = @fopen('/etc/network/interfaces','w'); 
