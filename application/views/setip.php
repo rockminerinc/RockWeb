@@ -26,7 +26,7 @@
 <tr>
 	<td align="right">Mac</td>
 	<td align="left">
-		<input name="JGTW" value="<?php echo $mac;?>" size="30" type="text" readonly="readonly">
+		<input name="mac" value="<?php echo $mac;?>" size="30" type="text" readonly="readonly">
 	</td>
 </tr>
 
