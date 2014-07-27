@@ -35,10 +35,9 @@ class Home extends CI_Controller {
 			if(!file_exists("/usr/share/nginx/www/data/mac.txt"))
 			{
 				exec('sudo touch /usr/share/nginx/www/data/mac.txt');
-				exec('sudo chmod 777 /usr/share/nginx/www/data/mac.txt');
-				$file_pointer = fopen('/usr/share/nginx/www/data/mac.txt','w');
+				//exec('sudo chmod 777 /usr/share/nginx/www/data/mac.txt');
+				$file_pointer = fopen('/root/.cubian-emac','w');
 				$newmac = $this->generatemac();
-			
 				fwrite($file_pointer,$newmac);
 				fclose($file_pointer);
 			}
