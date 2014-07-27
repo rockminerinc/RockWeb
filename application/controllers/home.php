@@ -60,6 +60,7 @@ class Home extends CI_Controller {
 				if($address)
 				{
 					$address_arr = explode(" ",$address);
+					if($address_arr['1']!='ether')
 					$this->data['ip_adress']=$address_arr['1'];
 				}
 			}
