@@ -624,6 +624,19 @@ iface eth0 inet static\n";
 				$this->data['gateway_id']=$gateway_arr['1'];
 				//echo $gateway_id;
 				}
+
+				//mac
+				$mac = strstr($line, 'hwaddress');
+				if($mac)
+				{
+				$mac_arr = explode(" ",$gateway);
+				$this->data['mac']=$mac_arr['1'];
+				//echo $gateway_id;
+				}
+
+
+
+
 				
 			}
 
