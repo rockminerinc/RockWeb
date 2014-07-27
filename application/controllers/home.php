@@ -614,14 +614,22 @@ iface eth0 inet static\n";
 				//echo $gateway_id;
 				}
 
+
+				$macaddr = strstr($line, 'hwaddress');
+				if($macaddr)
+				{
+				//$gateway_arr = explode(" ",$macaddr);
+				$this->data['mac']=end($macaddr); 
+				//echo $gateway_id;
+				}
  
 				
 			}
 
- 
+ 				/*
 				$command = 'sudo cat /root/.cubian-emac';
     			@exec( $command , $output ,$result);
- 				$this->data['mac']= $output[0];
+ 				$this->data['mac']= $output[0];*/
  
 
 			$this->load->view('common/header', $this->data);	
