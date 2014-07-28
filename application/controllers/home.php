@@ -1084,7 +1084,7 @@ iface eth0 inet static\n";
 
 	public function SaveHashrate()
 	{
-			$savedata=0;
+			$savedata=1;
 
 			if(!$savedata)
 			exit;
