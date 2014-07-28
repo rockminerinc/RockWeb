@@ -156,7 +156,7 @@ class Home extends CI_Controller {
 					 
 				}
 
-				$command='wget '.UPGRADE_PATH.'rockweb_'.$latest_version.'.zip -O /home/pi/temp/rockweb_'.$latest_version.'.zip &';
+				$command='wget '.UPGRADE_PATH.'rockweb_'.$latest_version.'.zip -O /home/pi/temp/rockweb_'.$latest_version.'.zip > /dev/null &';
 
 				exec( $command , $output ,$result);
 
@@ -167,7 +167,7 @@ class Home extends CI_Controller {
 			elseif ($step=='2') {
 				# upgrade...
 
-				$command 	= "sudo unzip -o /home/pi/temp/rockweb_".$latest_version.".zip -d /usr/share/nginx/www/ &";
+				$command 	= "sudo unzip -o /home/pi/temp/rockweb_".$latest_version.".zip -d /usr/share/nginx/www/  > /dev/null &";
 
 				exec( $command , $output ,$result);
 				var_dump($output);
@@ -893,7 +893,7 @@ iface eth0 inet static\n";
 		{
 
  
-			$command = 'sudo /root/upgrade.sh &';
+			$command = 'sudo /root/upgrade.sh > /dev/null &';
 
 			exec( $command , $output ,$result);
  			
