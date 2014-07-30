@@ -35,7 +35,7 @@ class Btckan extends CI_Controller
 	{
 		$head['minerId'] = $this->get_miner_id();
 		$head['client']['name'] = 'Rock';
-		$head['client']['ver'] = '0.1.0';
+		$head['client']['ver'] = '0.1.1';
 
 		return $head;
 	}
@@ -44,7 +44,7 @@ class Btckan extends CI_Controller
 	{
 		$status['summary'] = request_raw('summary');
 		$status['pools'] = request_raw('pools');
-
+		$status['coin'] = request_raw('coin');
 		return $status;
 	}
 
@@ -83,14 +83,9 @@ class Btckan extends CI_Controller
 
 	private function status_rsp_proc($rsp)
 	{
-		$cmd_proc_func = array(
-			'reboot' => 'reboot_cmd_proc',
-			//'devs' => 'cgminer_cmd_proc',
-			//'config' => 'cgminer_cmd_proc',
-			);
+		$cmd_proc_func = array('reboot' => 'reboot_cmd_proc',);
 
 		$result = json_decode($rsp, true);
-
 
 		if(!isset($result['data']['cmd']))
 		{
@@ -100,8 +95,14 @@ class Btckan extends CI_Controller
 		$cmd = $result['data']['cmd'];
 		if(!array_key_exists($cmd['operation'], $cmd_proc_func))
 		{
-			echo 'invalid command. ';
-			print_r($cmd);
+			$data['cmd']['id'] = $cmd['id'];
+			$data['cmd']['resultCode'] = 1;
+			$data['cmd']['result'] = 'Invalid command.';
+
+			$request['head'] = $this->pack_head();
+			$request['data'] = $data;
+
+			$result = $this->post('http://miner.btckan.com/miner/cmd_rsp', $request);
 			return;
 		}
 
