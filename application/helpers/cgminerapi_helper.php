@@ -122,21 +122,4 @@ function request($cmd)
 	return $data;
 }
  
- #得到原始数据
-function request_raw($cmd)
-{
-    $socket = getsock('127.0.0.1', 4028);
-    if($socket != null)
-    {
-    	socket_write($socket, $cmd, strlen($cmd));
-		$line = readsockline($socket);
-		socket_close($socket);
-		return $line;
-    }
-
-    return '';
-}
-
-
-
 ?>
