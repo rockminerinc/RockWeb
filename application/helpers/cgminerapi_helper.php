@@ -23,7 +23,7 @@ function getsock($addr, $port)
 	socket_close($socket);
 	echo $msg;
 	@exec('sudo service cgminer stop');
-	sleep(3);
+	//sleep(3);
 	@exec('sudo service cgminer start');
 
 	//showmsg($msg,'?c=home&m=reboot','10000');

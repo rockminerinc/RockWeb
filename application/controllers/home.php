@@ -13,7 +13,6 @@ class Home extends CI_Controller {
 		$this->load->helper('functions');
   		$this->load->library('form_validation');
   		$this->init();
- 
   		setTimezone('GMT');
 
 	}
@@ -21,6 +20,8 @@ class Home extends CI_Controller {
 
  	private function init()
  	{
+
+
 			if(!file_exists("/usr/share/nginx/www/data/hashrate.txt"))
 			{
 				exec('sudo touch /usr/share/nginx/www/data/hashrate.txt');
@@ -31,6 +32,20 @@ class Home extends CI_Controller {
 				fclose($file_pointer);
 			}
 
+			/*
+			if(!file_exists("/usr/share/nginx/www/data/mac.txt"))
+			{
+				exec('sudo touch /usr/share/nginx/www/data/mac.txt');
+				exec('sudo chmod 777 /root/.cubian-emac');
+				$file_pointer = fopen('/root/.cubian-emac','w');
+				$file_pointer = fopen('/root/.cubian-emac','w');
+				$newmac = $this->generatemac();
+				file_put_contents($file_pointer,$newmac);
+				//fwrite($file_pointer,$newmac);
+				//fclose($file_pointer);
+				//@exec('sudo reboot');
+
+			}*/
 
 
  	}
@@ -45,6 +60,7 @@ class Home extends CI_Controller {
 				if($address)
 				{
 					$address_arr = explode(" ",$address);
+					if($address_arr['1']!='ether')
 					$this->data['ip_adress']=$address_arr['1'];
 				}
 			}
@@ -64,9 +80,6 @@ class Home extends CI_Controller {
 	}
 	
 
-
-
-
 	public function devs()
 	{
 		$this->data['r'] = request('devs');
@@ -78,6 +91,43 @@ class Home extends CI_Controller {
 		
 		$this->load->view('common/footer');	
 	}
+
+	private function generatemac()
+	{
+
+			$strTmp = '1234567890abcdef';
+			$mac_str_1_p1 = $strTmp{rand(0, strlen($strTmp)-1)};
+			$mac_str_1_p2 = $strTmp{rand(0, strlen($strTmp)-1)};
+			$mac_str_2_p1 = $strTmp{rand(0, strlen($strTmp)-1)};
+			$mac_str_2_p2 = $strTmp{rand(0, strlen($strTmp)-1)};
+			$mac_str_3_p1 = $strTmp{rand(0, strlen($strTmp)-1)};
+			$mac_str_3_p2 = $strTmp{rand(0, strlen($strTmp)-1)};
+			$mac_str_4_p1 = $strTmp{rand(0, strlen($strTmp)-1)};
+			$mac_str_4_p2 = $strTmp{rand(0, strlen($strTmp)-1)};
+
+			$mac_str_1 = $mac_str_1_p1.$mac_str_1_p2;
+			$mac_str_2 = $mac_str_2_p1.$mac_str_2_p2;
+			$mac_str_3 = $mac_str_3_p1.$mac_str_3_p2;
+			$mac_str_4 = $mac_str_4_p1.$mac_str_4_p2;
+
+			$aryMacData = explode( ':' , $old_mac );
+			$aryMacData[count( $aryMacData )-4] = $mac_str_1;
+			$aryMacData[count( $aryMacData )-3] = $mac_str_2;
+			$aryMacData[count( $aryMacData )-2] = $mac_str_3;
+			$aryMacData[count( $aryMacData )-1] = $mac_str_4;
+
+			$new_mac = implode( ':' , $aryMacData );
+			$newmac = '70:00'.$new_mac;
+			return $newmac;
+			//@exec("sudo fconfig eth0 down");
+			//@exec("ifconfig eth0 hw ether ".$newmac);
+			//@exec("ifconfig eth0 up ");
+
+	}
+
+
+
+
 
 	public function upgrade2()
 	{
@@ -106,7 +156,7 @@ class Home extends CI_Controller {
 					 
 				}
 
-				$command='wget '.UPGRADE_PATH.'rockweb_'.$latest_version.'.zip -O /home/pi/temp/rockweb_'.$latest_version.'.zip &';
+				$command='wget '.UPGRADE_PATH.'rockweb_'.$latest_version.'.zip -O /home/pi/temp/rockweb_'.$latest_version.'.zip > /dev/null &';
 
 				exec( $command , $output ,$result);
 
@@ -117,7 +167,7 @@ class Home extends CI_Controller {
 			elseif ($step=='2') {
 				# upgrade...
 
-				$command 	= "sudo unzip -o /home/pi/temp/rockweb_".$latest_version.".zip -d /usr/share/nginx/www/ &";
+				$command 	= "sudo unzip -o /home/pi/temp/rockweb_".$latest_version.".zip -d /usr/share/nginx/www/  > /dev/null &";
 
 				exec( $command , $output ,$result);
 				var_dump($output);
@@ -376,10 +426,10 @@ class Home extends CI_Controller {
 					            ) 
 					        ) 
 			); 
-		//$re=file_get_contents($url, 0, $ctx);//($url);
-		$re=geturl($url);//($url);
+		$re=file_get_contents($url, 0, $ctx);//($url);
+		//$re=geturl($url);//($url);
 		$re2=geturl($btckan_url);//($url);
- 		var_dump($re2);
+ 		var_dump($re);
 		//echo $re2;
   
 	}
@@ -394,6 +444,7 @@ class Home extends CI_Controller {
 		$this->form_validation->set_rules('pool_url2', 'pool_url2', 'trim|xss_clean');
 		$this->form_validation->set_rules('pool_worker2', 'pool_worker2', 'trim|xss_clean');
 		$this->form_validation->set_rules('frequency', 'frequency', 'trim|xss_clean');
+		$this->form_validation->set_rules('fanspeed', 'fanspeed', 'trim|xss_clean');
 
 		if($this->form_validation->run())
 		{
@@ -407,6 +458,7 @@ class Home extends CI_Controller {
 			$pool2_datas['pass'] =$this->input->post('pool_passwd2', TRUE);
 			//$pool2_datas['freq'] =$this->input->post('freq', TRUE);
 			$frequency =$this->input->post('frequency', TRUE);
+			$fanspeed =$this->input->post('fanspeed', TRUE);
 
 			$content['pools']=array($pool1_datas,$pool2_datas); 
 			$content['api-listen']=true;
@@ -428,7 +480,11 @@ class Home extends CI_Controller {
 			if($frequency	==	'')
 				$frequency=320;
 
+			if($fanspeed	==	'')
+				$fanspeed=0;
+
 			$content['rmu-auto']=$frequency;
+			$content['rmu-fan']=$fanspeed;
 
 			$data = json_encode($content);
 			$data=str_replace("\\/", "/",  $data);
@@ -472,6 +528,7 @@ class Home extends CI_Controller {
 			$this->data['data_pool2'] = $pools_data[1];
 			
 			$this->data['rmu_freq'] = $data_arr2['rmu-auto'];
+			$this->data['rmu_fan'] = $data_arr2['rmu-fan'];
 			//var_dump($data_arr2['rmu-auto']);
 			$this->data['r'] = request('pools');
 			
@@ -508,6 +565,8 @@ iface eth0 inet static\n";
 			$content .= 'address '.$JMIP."\n";
 			$content .= 'netmask '.$JMSK."\n";
 			$content .= 'gateway '.$JGTW."\n";
+			$newmac = $this->generatemac();
+			$content .= 'hwaddress ether '.$newmac."\n";
 
 
 			$file_pointer = @fopen('/etc/network/interfaces','w'); 
@@ -519,6 +578,7 @@ iface eth0 inet static\n";
 			}   
 			else
 			{
+
 				fwrite($file_pointer,$content);
 				fclose($file_pointer);
 				exec('sudo /etc/init.d/networking restart');
@@ -535,6 +595,7 @@ iface eth0 inet static\n";
 				if($address)
 				{
 					$address_arr = explode(" ",$address);
+					if($address_arr['1']!='ether')
 					$this->data['ip_adress']=$address_arr['1'];
 				}
 				
@@ -553,8 +614,23 @@ iface eth0 inet static\n";
 				$this->data['gateway_id']=$gateway_arr['1'];
 				//echo $gateway_id;
 				}
+
+
+				$macaddr = strstr($line, 'hwaddress');
+				if($macaddr)
+				{
+				$mac_arr = explode(" ",$macaddr);
+				$this->data['mac']=end($mac_arr);
+				}
+ 
 				
 			}
+
+ 				/*
+				$command = 'sudo cat /root/.cubian-emac';
+    			@exec( $command , $output ,$result);
+ 				$this->data['mac']= $output[0];*/
+ 
 
 			$this->load->view('common/header', $this->data);	
 			$this->load->view('common/left');	
@@ -817,7 +893,7 @@ iface eth0 inet static\n";
 		{
 
  
-			$command = 'sudo /root/upgrade.sh &';
+			$command = 'sudo /root/upgrade.sh > /dev/null &';
 
 			exec( $command , $output ,$result);
  			
@@ -1008,6 +1084,11 @@ iface eth0 inet static\n";
 
 	public function SaveHashrate()
 	{
+			$savedata=1;
+
+			if(!$savedata)
+			exit;
+
 			if(!file_exists("/usr/share/nginx/www/data/hashrate.txt"))
 			{
 				exec('touch /usr/share/nginx/www/data/hashrate.txt');

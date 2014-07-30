@@ -43,7 +43,7 @@
  <table class="table table-striped" style="width:90%">
 <tr style="font-weight:bold;">
  
-	<td>Elapsed</td><td>GHS av</td><td>GHS 5s</td><td>GHS 15m</td><td>Accepted</td><td>Rejected</td><td>Rej%</td>
+	 <td>GHS av</td><td>GHS 5s</td><td>GHS 15m</td><td>Accepted</td><td>Rejected</td><td>Rej%</td>
  
 </tr>
  <?php foreach ($sumary as $key=>$devs): ?>
@@ -66,7 +66,7 @@
              <?php foreach ($devs as $key=>$str): ?>
  				<?php
 					
- 				if( $key=='Last getwork'||$key=='Device Rejected%'||$key=='Difficulty Stale'||$key=='Difficulty Rejected'||$key=='Difficulty Accepted'||$key=='Local Work'||$key=='MHS 1m'||$key=='MHS 5m'||$key=='Getworks'||$key=='Hardware Errors'||$key=='Discarded'||$key=='Found Blocks'||$key=='Utility'||$key=='Stale'||$key=='Get Failures'||$key=='Remote Failures'||$key=='Network Blocks'||$key=='Total MH'||$key=='Work Utility'||$key=='Stratum URL'||$key=='Has GBT'||$key=='Pool Stale%'||$key=='Best Share'||$key=='Device Hardware%')
+ 				if( $key=='Elapsed'||$key=='Last getwork'||$key=='Device Rejected%'||$key=='Difficulty Stale'||$key=='Difficulty Rejected'||$key=='Difficulty Accepted'||$key=='Local Work'||$key=='MHS 1m'||$key=='MHS 5m'||$key=='Getworks'||$key=='Hardware Errors'||$key=='Discarded'||$key=='Found Blocks'||$key=='Utility'||$key=='Stale'||$key=='Get Failures'||$key=='Remote Failures'||$key=='Network Blocks'||$key=='Total MH'||$key=='Work Utility'||$key=='Stratum URL'||$key=='Has GBT'||$key=='Pool Stale%'||$key=='Best Share'||$key=='Device Hardware%')
  					continue;
 
 					
