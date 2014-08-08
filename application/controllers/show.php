@@ -48,12 +48,13 @@ class Show extends CI_Controller {
 				$t1_data['ip'] = $ip;
 				$t1_data['boards'] = $hashdatas[$ip]['num'];
 				$t1_data['hash'] = $hashdatas[$ip]['hash'];
-				if($save)
+				//if($save)
 				$this->post_to_monitor($monitor_url,$t1_data);
 			}
 				//$iplist[] = $ip ;
 			$count--;
 		}
+
 
 
 
@@ -97,10 +98,17 @@ class Show extends CI_Controller {
 				case 'reboot':
 					$this->reboot_cmd_proc($ip);
 					break;
+
 				case 'setting':
 					$data = (array) json_decode($value->para);
 					//var_dump($data);
-					$this->pool_cmd_proc($ip,$data);
+					$re=$this->pool_cmd_proc($ip,$data);
+					//var_dump($value);
+					$this->close_command($value->cid);
+					//var_dump($cid);
+					//var_dump($re);
+					break;
+
 				default:
 					$this->reboot_cmd_proc($ip);
 					break;
@@ -109,7 +117,9 @@ class Show extends CI_Controller {
 			//$value->ipint;
 
 		}
-		var_dump($commands_array);
+
+		//return;
+		//var_dump($commands_array);
 
 		//echo $re;
 	}
@@ -230,6 +240,22 @@ function object_array($array) {
  		echo $result;
 	}
 
+	function close_command($cid)
+	{
+		$url = 'http://rockmonitor.sinaapp.com/?c=home&m=closeCommand&cid='.$cid;
+		$ctx = stream_context_create(array( 
+					        'http' => array( 
+					            'timeout' => 1  //time out
+					            ) 
+					        ) 
+			); 
+
+		//$url_statistics = $url.'/Statistics/';
+		$re=@file_get_contents($url, 0, $ctx);//($url);		
+
+	}
+
+
 	//$data array
  	function pool_cmd_proc($ip,$data)
 	{
@@ -241,35 +267,34 @@ function object_array($array) {
 			$para[] = $key.'='.$value;
 		}
 
-		$post_data = implode('&',$para); 
+		$post_data = @implode('&',$para); 
 		$post_data = $post_data.'&update=Update/Restart';
 		//$data['update']='Update/Restart';
-		var_dump($post_data);
+		//var_dump($post_data);
 		$result = $this->post('http://'.$ip.':8000/Settings/Upload_Data', $post_data);
- 		echo $result;
+ 		return $result;
 	}
 
 
 	function reboot()
 	{
-
 		$ip = $this->input->get('ip');
 		$data['update']='Update/Restart';
 		$result = $this->post('http://'.$ip.':8000/Settings/Upload_Data', $data);
 		var_dump($result);
 	}
-	function post($url, $data)
+	function post($url, $post_data)
 	{	
 
-		$post_data = implode('&',$data); 
-		$post_data = $data;
+		//$post_data = @implode('&',$data); 
+		//$post_data = $data;
 		$ch = curl_init();
 	    curl_setopt($ch, CURLOPT_URL, $url);
 	    curl_setopt($ch, CURLOPT_HEADER, 0);
 	    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 	    curl_setopt($ch, CURLOPT_POST, 1);
 	    curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
-	    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Content-Length: '.strlen($post_data)));
+	    @curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Content-Length: '.strlen($post_data)));
 	    $result = curl_exec($ch);
 	    curl_close($ch);
 
