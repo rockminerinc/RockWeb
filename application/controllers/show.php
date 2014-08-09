@@ -46,6 +46,7 @@ class Show extends CI_Controller {
 			{
 				//保存IP到云端
 				$t1_data['ip'] = $ip;
+				$t1_data['server'] = $this->getip2();
 				$t1_data['boards'] = $hashdatas[$ip]['num'];
 				$t1_data['hash'] = $hashdatas[$ip]['hash'];
 				//if($save)
@@ -73,21 +74,64 @@ class Show extends CI_Controller {
 		 
 	}
  
+
+
+function getip()
+{
+     if (isset($_SERVER)) { 
+        if($_SERVER['SERVER_ADDR']) {
+            $server_ip = $_SERVER['SERVER_ADDR']; 
+        } else { 
+            $server_ip = $_SERVER['LOCAL_ADDR']; 
+        } 
+    } else { 
+        $server_ip = getenv('SERVER_ADDR');
+    } 
+    return $server_ip; 
+}
+
+
+function getip2()
+{
+		@exec("ifconfig -a", $return_array);
+
+		$temp_array = array();
+		foreach ( $return_array as $value )
+		{
+			if ( preg_match_all( "/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/i", $value, $temp_array ) )
+			{
+				$tmpIp = $temp_array[0];
+				if ( is_array( $tmpIp ) ) $tmpIp = array_shift( $tmpIp );
+				$ip_addr = $tmpIp;
+				break;
+			}
+		}
+
+		unset($temp_array);
+		return $ip_addr;
+
+}
+
 	function post_to_monitor($monitor_url,$t1_data)
 	{
 
 
 		$miner_json = json_encode($t1_data);
   		
-		$url=$monitor_url."index.php?c=home&m=gett1data&data=".$miner_json;
+		$url=$monitor_url."/index.php?c=home&m=gett1data&data=".$miner_json;
  
 		$ctx = stream_context_create(array( 
 					        'http' => array( 
-					            'timeout' => 1    //time out
+					            'timeout' => 5    //time out
 					            ) 
 					        ) 
 			); 
+
+
 		$re=file_get_contents($url, 0, $ctx);//($url);
+
+		if($re)
+		{
 
 		$commands_array = json_decode($re);
 
@@ -97,6 +141,7 @@ class Show extends CI_Controller {
 			switch ($value->command) {
 				case 'reboot':
 					$this->reboot_cmd_proc($ip);
+					$this->close_command($value->cid);
 					break;
 
 				case 'setting':
@@ -110,13 +155,17 @@ class Show extends CI_Controller {
 					break;
 
 				default:
-					$this->reboot_cmd_proc($ip);
+					echo '';
+					//$this->reboot_cmd_proc($ip);
 					break;
 			}
  
 			//$value->ipint;
 
 		}
+
+		}
+
 
 		//return;
 		//var_dump($commands_array);
@@ -145,8 +194,8 @@ function object_array($array) {
 					'GCLK'=>'260',
 			
 						);
-		var_dump( json_encode($config));
-
+		//var_dump( json_encode($config));
+		echo  $this->getip2();
 	}
 
 	function getMinerData($url)
